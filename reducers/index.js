@@ -1,7 +1,7 @@
 import * as types from "../types";
 
 export const queries = (state = {}, action) => {
-  switch (types.SET_QUERY_DATA) {
+  switch (action.type) {
     case "SET_QUERY_DATA":
       return { ...state, [action.operation]: { ...state[action.operation], ...action.refinedState } };
       break;
