@@ -78,6 +78,16 @@ class Queries extends React.PureComponent {
     });
   };
 
+  setLoadingDataState = () => {
+    let { operation } = this.props;
+    this.setState({
+      [`${operation}`]: {
+        ...this.state[`${operation}`],
+        loading: true
+      }
+    });
+  };
+
   render() {}
 }
 
