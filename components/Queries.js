@@ -23,7 +23,7 @@ class Queries extends React.PureComponent {
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
     this.state = {
-      [`${operation}`]: { isInitialDataSet: false, loading: true }
+      [operation]: { isInitialDataSet: false, loading: true }
     };
   }
 
@@ -69,8 +69,8 @@ class Queries extends React.PureComponent {
   setInitialStateFromStoreAfterMount = () => {
     let { operation, queries } = this.props;
     this.setState({
-      [`${operation}`]: {
-        ...this.state[`${operation}`],
+      [operation]: {
+        ...this.state[operation],
         loading: false,
         isInitialDataSet: queries[operation] ? true : false,
         data: queries[operation]
@@ -81,11 +81,29 @@ class Queries extends React.PureComponent {
   setLoadingDataState = () => {
     let { operation } = this.props;
     this.setState({
-      [`${operation}`]: {
-        ...this.state[`${operation}`],
+      [operation]: {
+        ...this.state[operation],
         loading: true
       }
     });
+  };
+
+  setSuccessDataState = (data, CB) => {
+    let initialDataSettings = { isInitialDataSet: true },
+      { operation } = this.props;
+    this.context.store.dispatch(operation, data);
+    this.setState(
+      {
+        [operation]: {
+          ...this.state[operation],
+          error: undefined,
+          ...initialDataSettings,
+          loading: false,
+          data
+        }
+      },
+      () => CB && CB()
+    );
   };
 
   render() {}
