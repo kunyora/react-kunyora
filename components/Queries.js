@@ -117,6 +117,13 @@ class Queries extends React.PureComponent {
     });
   };
 
+  refetchQuery = config => {
+    let { skip } = this.props;
+    if (!skip) {
+      this.setLoadingDataState();
+    }
+  };
+
   render() {}
 }
 
