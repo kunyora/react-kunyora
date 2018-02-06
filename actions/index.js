@@ -6,9 +6,9 @@ export const setQuery = (operation, refinedState) => ({
   refinedState
 });
 
-export const sendRequestHeaderCommand = () => ({
+export const sendRequestHeaderCommand = request => ({
   type: types.COMPOSER_SEND_REQUEST_HEADER_CMD,
-  _reqObj: { options: {} }
+  _reqObj: { options: request }
 });
 
 export const sendResponseToMiddleware = response => ({
