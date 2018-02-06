@@ -5,11 +5,10 @@ export default (Store = {
 
   listen: function(callback) {
     this.callbacks.push(callback);
-    return this.nullify;
-  },
-
-  nullify: function() {
-    this.listen = null;
+    return function() {
+      this.callbacks.splice(this.callbacks.indexOf(callback), 1);
+      callback = null;
+    };
   },
 
   dispatch: function(action, args) {
