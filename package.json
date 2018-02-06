@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "composer-client": "https://github.com/kayslay/composer-client.git",
+    "create-react-context": "^0.1.6",
     "invariant": "^2.2.2",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0"
