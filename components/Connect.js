@@ -2,24 +2,29 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
-export default class Connect extends React.PureComponent {
+import { ComposerContext } from "./ComposerProvider";
+
+class ConnectAdvanced extends React.PureComponent {
   state = {};
 
   static propTypes = {
-    mapStateToProps: PropTypes.func
-  };
-
-  static contextTypes = {
-    store: PropTypes.object
+    mapStateToProps: PropTypes.func,
+    store: PropTypes.any,
+    router: PropTypes.any,
+    client: PropTypes.any
   };
 
   componentDidMount() {
     this.updateState();
+    this.subscribe();
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 
   updateState = () => {
-    let { store: { getState, listen } } = this.context,
-      { mapStateToProps } = this.props;
+    let { mapStateToProps, store: { getState, listen } } = this.props;
 
     let shouldSetState = false,
       nextProps = mapStateToProps(getState()),
@@ -40,17 +45,27 @@ export default class Connect extends React.PureComponent {
   };
 
   subscribe = () => {
-    let { store: { getState, listen } } = this.context,
-      { mapStateToProps } = this.props;
-
-    let unsubscribe = listen(function() {
+    this.unsubscribe = listen(function() {
       this.updateState();
     });
-
-    unsubscribe();
   };
 
   render() {
     return this.props.children(this.state);
   }
 }
+
+export const Connect = ({ children, ...rest }) => (
+  <ComposerContext.Consumer>
+    {composerConfigs => {
+      let composedProps = { ...composerConfigs, ...rest };
+      return (
+        <ConnectAdvanced {...composedProps}>
+          {state => {
+            React.cloneElement(children, state);
+          }}
+        </ConnectAdvanced>
+      );
+    }}
+  </ComposerContext.Consumer>
+);
