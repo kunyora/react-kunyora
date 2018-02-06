@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import invariant from "invariant";
 
-class Queries extends React.PureComponent {
-  constructor(props, context) {
-    super(props, context);
+import { Connect } from "./Connect";
+
+class QueriesAdvanced extends React.PureComponent {
+  constructor(props) {
+    super(props);
     let { operation, options, queries } = props;
     invariant(
       typeof operation === "string",
@@ -34,10 +35,7 @@ class Queries extends React.PureComponent {
       variables: PropTypes.object,
       endpoint: PropTypes.string,
       fetchPolicy: PropTypes.string
-    })
-  };
-
-  static contextTypes = {
+    }),
     client: PropTypes.any,
     store: PropTypes.any
   };
@@ -90,8 +88,9 @@ class Queries extends React.PureComponent {
 
   setSuccessDataState = (data, CB) => {
     let initialDataSettings = { isInitialDataSet: true },
-      { operation } = this.props;
-    this.context.store.dispatch(operation, data);
+      { operation, store } = this.props;
+    //send to store here
+    // this.context.store.dispatch(operation, data);
     this.setState(
       {
         [operation]: {
@@ -127,6 +126,21 @@ class Queries extends React.PureComponent {
   render() {}
 }
 
-const _Queries = connect(state => ({ queries: state.queries }));
+function mapStateToProps(state) {
+  return {
+    queries: state.queries
+  };
+}
 
-export default _Queries;
+export const Queries = ({ children, ...rest }) => (
+  <Connect mapStateToProps={mapStateToProps}>
+    {(props, context) => {
+      let composedProps = { ...context, ...rest };
+      return (
+        <QueriesAdvanced {...composedProps}>
+          {props => children(props)}
+        </QueriesAdvanced>
+      );
+    }}
+  </Connect>
+);

@@ -57,13 +57,11 @@ class ConnectAdvanced extends React.PureComponent {
 
 export const Connect = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
-    {composerConfigs => {
-      let composedProps = { ...composerConfigs, ...rest };
+    {context => {
+      let composedProps = { ...context, ...rest };
       return (
         <ConnectAdvanced {...composedProps}>
-          {state => {
-            React.cloneElement(children, state);
-          }}
+          {props => children(props, context)}
         </ConnectAdvanced>
       );
     }}
