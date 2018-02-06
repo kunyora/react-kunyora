@@ -1,23 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
+import createReactContext from "create-react-context";
+
+export const ComposerContext = createReactContext({
+  client: {},
+  store: {},
+  router: {}
+});
 
 export default class ComposerProvider extends React.PureComponent {
-  static childContextTypes = {
+  static propTypes = {
     client: PropTypes.any,
     store: PropTypes.any,
     router: PropTypes.any
   };
 
-  getChildContext() {
-    return {
-      client: this.props.client,
-      store: this.props.store,
-      router: this.props.router
-    };
-  }
-
   render() {
-    let { store, children } = this.props;
-    return this.props.children;
+    let { store, children, client, router } = this.props,
+      value = { store, client, router };
+    return (
+      <ComposerContext.Provider value={value}>
+        {children}
+      </ComposerContext.Provider>
+    );
   }
 }
