@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import invariant from "invariant";
 
 import { Connect } from "./Connect";
+import * as types from "../types";
 
 class QueriesAdvanced extends React.PureComponent {
   constructor(props) {
@@ -128,7 +129,7 @@ class QueriesAdvanced extends React.PureComponent {
 
 function mapStateToProps(state) {
   return {
-    queries: state.queries
+    queries: state[types.SET_QUERY_DATA]
   };
 }
 
