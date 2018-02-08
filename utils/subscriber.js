@@ -1,4 +1,3 @@
-import * as actions from "../actions";
 import invariant from "invariant";
 
 function Subscriber(store, client) {
