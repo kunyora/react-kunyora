@@ -4,11 +4,12 @@ import invariant from "invariant";
 
 import { Connect } from "./Connect";
 import * as types from "../types";
+import Subscriber from "../utils/subscriber";
 
 class QueriesAdvanced extends React.PureComponent {
   constructor(props) {
     super(props);
-    let { operation, options, queries } = props;
+    let { operation, options, queries, store, client } = props;
     invariant(
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
@@ -27,6 +28,7 @@ class QueriesAdvanced extends React.PureComponent {
     this.state = {
       [operation]: { isInitialDataSet: false, loading: true }
     };
+    this.subscriber = new Subscriber(store, client);
   }
 
   static propTypes = {
@@ -35,7 +37,8 @@ class QueriesAdvanced extends React.PureComponent {
     options: PropTypes.shapeOf({
       variables: PropTypes.object,
       endpoint: PropTypes.string,
-      fetchPolicy: PropTypes.string
+      fetchPolicy: PropTypes.string,
+      onDownloadProgress: PropTypes.func
     }),
     client: PropTypes.any,
     store: PropTypes.any
@@ -87,23 +90,22 @@ class QueriesAdvanced extends React.PureComponent {
     });
   };
 
-  setSuccessDataState = (data, CB) => {
+  setSuccessDataState = data => {
     let initialDataSettings = { isInitialDataSet: true },
-      { operation, store } = this.props;
-    //send to store here
-    // this.context.store.dispatch(operation, data);
-    this.setState(
-      {
-        [operation]: {
-          ...this.state[operation],
-          error: undefined,
-          ...initialDataSettings,
-          loading: false,
-          data
-        }
-      },
-      () => CB && CB()
-    );
+      { operation, store } = this.props,
+      overallState = store.getState()[types.SET_QUERY_DATA] || {},
+      _newState = { ...overallState, operation: data };
+
+    store.dispatch(types.SET_QUERY_DATA, _newState);
+    this.setState({
+      [operation]: {
+        ...this.state[operation],
+        error: undefined,
+        ...initialDataSettings,
+        loading: false,
+        data
+      }
+    });
   };
 
   setErrorDataState = error => {
@@ -118,9 +120,35 @@ class QueriesAdvanced extends React.PureComponent {
   };
 
   refetchQuery = config => {
-    let { skip } = this.props;
+    let { skip, operation, options: { onDownloadProgress } } = this.props;
     if (!skip) {
       this.setLoadingDataState();
+      this.subscriber
+        .subscribeToQuery(operation, onDownloadProgress)
+        .then(response => this.setSuccessDataState(response.data))
+        .catch(error =>
+          this.setErrorDataState(error.response || error.message)
+        );
+    }
+  };
+
+  fetchMore = config => {
+    let { skip, operation } = this.props,
+      { updateQuery } = config;
+    if (!skip) {
+      invariant(updateQuery, "[updateQuery] is needed in [data.fetchMore]");
+      this.setLoadingDataState();
+      this.subscriber
+        .subscribeToQuery(operation)
+        .then(response => {
+          let _result = updateQuery(this.state[operation].data, {
+            fetchMoreResult: response.data
+          });
+          this.setSuccessDataState(response.data);
+        })
+        .catch(error =>
+          this.setErrorDataState(error.response || error.message)
+        );
     }
   };
 
