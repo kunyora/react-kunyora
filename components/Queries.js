@@ -171,7 +171,7 @@ function mapStateToProps(state) {
 export const Queries = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
-      let composedProps = { ...context, ...rest };
+      let composedProps = { ...context, ...rest, ...props };
       return (
         <QueriesAdvanced {...composedProps}>
           {(queryState, fetchMore, refetchQuery) =>
