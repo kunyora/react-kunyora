@@ -152,7 +152,14 @@ class QueriesAdvanced extends React.PureComponent {
     }
   };
 
-  render() {}
+  render() {
+    let { operation } = this.props;
+    return this.props.children(
+      this.state[operation],
+      this.fetchMore,
+      this.refetchQuery
+    );
+  }
 }
 
 function mapStateToProps(state) {
@@ -167,7 +174,9 @@ export const Queries = ({ children, ...rest }) => (
       let composedProps = { ...context, ...rest };
       return (
         <QueriesAdvanced {...composedProps}>
-          {props => children(props)}
+          {(queryState, fetchMore, refetchQuery) =>
+            children(queryState, fetchMore, refetchQuery)
+          }
         </QueriesAdvanced>
       );
     }}
