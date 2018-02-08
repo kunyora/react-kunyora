@@ -55,3 +55,5 @@ Subscriber.prototype.sendResponseToCallback = function(response) {
     isUseAfterCallbackSupplied(response);
   }
 };
+
+export default Subscriber;
