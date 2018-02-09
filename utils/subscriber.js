@@ -5,14 +5,14 @@ function Subscriber(store, client) {
   this.client = client;
 }
 
-Subscriber.prototype.subscribeToQuery = function(
+Subscriber.prototype.subscribeToQuery = function (
   operation,
   downloadProgressCallback
 ) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
     let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.isUseBeforeCallbackSupplied(headers);
+      requestHeaders = this.client.useBeforeCallback(headers);
 
     _promise = this.sendQuery(
       requestHeaders,
@@ -25,7 +25,7 @@ Subscriber.prototype.subscribeToQuery = function(
   return _promise;
 };
 
-Subscriber.prototype.sendQuery = function(
+Subscriber.prototype.sendQuery = function (
   headers,
   downloadProgressCallback,
   operation
@@ -48,10 +48,10 @@ Subscriber.prototype.sendQuery = function(
   return _promise;
 };
 
-Subscriber.prototype.sendResponseToCallback = function(response) {
-  let { isUseAfterCallbackSupplied } = this.client;
+Subscriber.prototype.sendResponseToCallback = function (response) {
+  let { isUseAfterCallbackSupplied, useAfterCallback } = this.client;
   if (isUseAfterCallbackSupplied) {
-    isUseAfterCallbackSupplied(response);
+    useAfterCallback(response);
   }
 };
 
