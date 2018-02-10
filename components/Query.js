@@ -7,8 +7,8 @@ import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 
 class QueryAdvanced extends React.PureComponent {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     let { operation, options, queries, store, client } = props;
     invariant(
       typeof operation === "string",
