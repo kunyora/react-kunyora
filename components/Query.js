@@ -6,7 +6,7 @@ import { Connect } from "./Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 
-class QueriesAdvanced extends React.PureComponent {
+class QueryAdvanced extends React.PureComponent {
   constructor(props) {
     super(props);
     let { operation, options, queries, store, client } = props;
@@ -16,9 +16,9 @@ class QueriesAdvanced extends React.PureComponent {
     );
     invariant(
       options &&
-        options.variables &&
-        typeof options.variables === "object" &&
-        options.variables instanceof Object,
+      options.variables &&
+      typeof options.variables === "object" &&
+      options.variables instanceof Object,
       "[variables] property in props [options] and must be of type [object]"
     );
     invariant(
@@ -168,16 +168,16 @@ function mapStateToProps(state) {
   };
 }
 
-export const Queries = ({ children, ...rest }) => (
+export const Query = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
       return (
-        <QueriesAdvanced {...composedProps}>
+        <QueryAdvanced {...composedProps}>
           {(queryState, fetchMore, refetchQuery) =>
             children(queryState, fetchMore, refetchQuery)
           }
-        </QueriesAdvanced>
+        </QueryAdvanced>
       );
     }}
   </Connect>
