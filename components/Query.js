@@ -94,7 +94,7 @@ class QueryAdvanced extends React.PureComponent {
     let initialDataSettings = { isInitialDataSet: true },
       { operation, store } = this.props,
       overallState = store.getState()[types.SET_QUERY_DATA] || {},
-      _newState = { ...overallState, operation: data };
+      _newState = { ...overallState, [operation]: data };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
     this.setState({
