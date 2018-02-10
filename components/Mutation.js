@@ -8,7 +8,7 @@ import * as types from "../types";
 
 class MutationAdvanced extends React.PureComponent {
   constructor(props, context) {
-    super(props, context)
+    super(props, context);
     let { operation, options, store, client } = props;
     invariant(
       typeof operation === "string",
@@ -16,9 +16,9 @@ class MutationAdvanced extends React.PureComponent {
     );
     invariant(
       options &&
-      options.variables &&
-      typeof options.variables === "object" &&
-      options.variables instanceof Object,
+        options.variables &&
+        typeof options.variables === "object" &&
+        options.variables instanceof Object,
       "[variables] property in props [options] and must be of type [object]"
     );
     invariant(
@@ -34,16 +34,18 @@ class MutationAdvanced extends React.PureComponent {
   static propTypes = {
     operation: PropTypes.string.isRequired,
     options: PropTypes.shapeOf({
-      refetchQueries: PropTypes.arrayOf(PropTypes.shapeOf({
-        operation: PropTypes.string.isRequired,
-        variables: PropTypes.object,
-        endpoint: PropTypes.string
-      })),
+      refetchQueries: PropTypes.arrayOf(
+        PropTypes.shapeOf({
+          operation: PropTypes.string.isRequired,
+          variables: PropTypes.object,
+          endpoint: PropTypes.string
+        })
+      ),
       onUploadProgress: PropTypes.func
     }),
     client: PropTypes.any,
     store: PropTypes.any
-  }
+  };
 
   setLoadingDataState = () => {
     let { operation } = this.props;
@@ -54,51 +56,61 @@ class MutationAdvanced extends React.PureComponent {
     });
   };
 
-  refetchQueries = (refetchConfig) => {
+  refetchQueries = refetchConfig => {
     let { store } = this.props;
 
     refetchConfig.forEach(config => {
       let { operation } = config;
-      this.subscriber.subscribeToQuery(operation, null).then(response => {
-        let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-          _newState = { ...overallState, [operation]: response.data };
+      this.subscriber
+        .subscribeToQuery(operation, null)
+        .then(response => {
+          let overallState = store.getState()[types.SET_QUERY_DATA] || {},
+            _newState = { ...overallState, [operation]: response.data };
 
-        store.dispatch(types.SET_QUERY_DATA, _newState);
-      }).catch(error => {
-        if (process.env.NODE_ENV !== "production") {
-          console.log(error);
-        }
-      })
+          store.dispatch(types.SET_QUERY_DATA, _newState);
+        })
+        .catch(error => {
+          if (process.env.NODE_ENV !== "production") {
+            console.log(error);
+          }
+        });
     });
-  }
+  };
 
   mutate = () => {
-    let { operation, options: { onUploadProgress }, refetchQueries } = this.props;
+    let {
+      operation,
+      options: { onUploadProgress },
+      refetchQueries
+    } = this.props;
     this.setLoadingDataState();
-    this.subscriber.subscribeToMutation(operation, onUploadProgress).then(response => {
-      this.setLoadingDataState();
-      if (refetchQueries) this.refetchQueries(refetchQueries);
-      return response.data;
-    }).catch(error => {
-      this.setLoadingDataState();
-      return Promise.reject(error);
-    })
-  }
+    this.subscriber
+      .subscribeToMutation(operation, onUploadProgress)
+      .then(response => {
+        this.setLoadingDataState();
+        if (refetchQueries) this.refetchQueries(refetchQueries);
+        return response.data;
+      })
+      .catch(error => {
+        this.setLoadingDataState();
+        return Promise.reject(error);
+      });
+  };
 
   render() {
-    return this.props.children(state, mutate)
+    return this.props.children(state, mutate);
   }
 }
 
 export const Mutation = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
     {context => {
-      let composedProps = { ...context, ...rest }
+      let composedProps = { ...context, ...rest };
       return (
         <MutationAdvanced {...composedProps}>
           {(mutationState, mutate) => children(mutationState, mutate)}
         </MutationAdvanced>
-      )
+      );
     }}
   </ComposerContext.Consumer>
-)
+);
