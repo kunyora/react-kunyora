@@ -36,9 +36,9 @@ class MutationAdvanced extends React.PureComponent {
 
   static propTypes = {
     operation: PropTypes.string.isRequired,
-    options: PropTypes.shapeOf({
+    options: PropTypes.shape({
       refetchQueries: PropTypes.arrayOf(
-        PropTypes.shapeOf({
+        PropTypes.shape({
           operation: PropTypes.string.isRequired,
           variables: PropTypes.object,
           endpoint: PropTypes.string

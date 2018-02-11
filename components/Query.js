@@ -34,7 +34,7 @@ class QueryAdvanced extends React.PureComponent {
   static propTypes = {
     operation: PropTypes.string.isRequired,
     skip: PropTypes.bool,
-    options: PropTypes.shapeOf({
+    options: PropTypes.shape({
       variables: PropTypes.object,
       endpoint: PropTypes.string,
       fetchPolicy: PropTypes.string,
