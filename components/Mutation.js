@@ -22,8 +22,11 @@ class MutationAdvanced extends React.PureComponent {
       "[variables] property in props [options] and must be of type [object]"
     );
     invariant(
-      operation.slice(0, 3).toUpperCase() === "GET",
-      "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
+      operation.slice(0, 6).toUpperCase() === "CREATE" ||
+        operation.slice(0, 6).toUpperCase() === "UPDATE" ||
+        operation.slice(0, 10).toUpperCase() === "PARTUPDATE" ||
+        operation.slice(0, 6).toUpperCase() === "DELETE",
+      "It doesn't feel like you want the component to perform a mutation. Mutations could only be of the form createUser, deleteTicket etc with the ***create, update, partUpdate and delete*** methods as a prefix. please check the docs"
     );
     this.state = {
       [operation]: { loading: false }

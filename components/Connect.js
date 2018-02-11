@@ -15,8 +15,8 @@ class ConnectAdvanced extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.updateState();
     this.subscribe();
+    this.updateState();
   }
 
   componentWillUnmount() {
