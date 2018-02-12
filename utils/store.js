@@ -16,7 +16,7 @@ export default (Store = {
   dispatch: function(action, args) {
     this.state = {
       ...this.state,
-      action: args
+      [action]: args
     };
     this.runCallbacks();
   },
