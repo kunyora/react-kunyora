@@ -16,10 +16,10 @@ class MutationAdvanced extends React.PureComponent {
     );
     invariant(
       options &&
-        options.variables &&
-        typeof options.variables === "object" &&
-        options.variables instanceof Object,
-      "[variables] property in props [options] and must be of type [object]"
+        options.config &&
+        typeof options.config === "object" &&
+        options.config instanceof Object,
+      "[config] property is required in props [options] and must be of type [object]"
     );
     invariant(
       operation.slice(0, 6).toUpperCase() === "CREATE" ||
@@ -40,11 +40,10 @@ class MutationAdvanced extends React.PureComponent {
       refetchQueries: PropTypes.arrayOf(
         PropTypes.shape({
           operation: PropTypes.string.isRequired,
-          variables: PropTypes.object,
-          endpoint: PropTypes.string
+          config: PropTypes.object
         })
       ),
-      onUploadProgress: PropTypes.func
+      config: PropTypes.object
     }),
     client: PropTypes.any,
     store: PropTypes.any
@@ -62,10 +61,9 @@ class MutationAdvanced extends React.PureComponent {
   refetchQueries = refetchConfig => {
     let { store } = this.props;
 
-    refetchConfig.forEach(config => {
-      let { operation } = config;
+    refetchConfig.forEach(({ operation, config }) => {
       this.subscriber
-        .subscribeToQuery(operation, null)
+        .subscribeToQuery(operation, config)
         .then(response => {
           let overallState = store.getState()[types.SET_QUERY_DATA] || {},
             _newState = { ...overallState, [operation]: response.data };
@@ -80,15 +78,12 @@ class MutationAdvanced extends React.PureComponent {
     });
   };
 
-  mutate = () => {
-    let {
-      operation,
-      options: { onUploadProgress },
-      refetchQueries
-    } = this.props;
+  mutate = passedConfig => {
+    let { operation, options: { config }, refetchQueries } = this.props,
+      _config = passedConfig || config;
     this.setLoadingDataState();
     this.subscriber
-      .subscribeToMutation(operation, onUploadProgress)
+      .subscribeToMutation(operation, _config)
       .then(response => {
         this.setLoadingDataState();
         if (refetchQueries) this.refetchQueries(refetchQueries);

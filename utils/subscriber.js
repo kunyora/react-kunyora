@@ -5,56 +5,25 @@ function Subscriber(store, client) {
   this.client = client;
 }
 
-Subscriber.prototype.subscribeToQuery = function(
-  operation,
-  downloadProgressCallback
-) {
+Subscriber.prototype.subscribeToQuery = function(operation, config) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
     let { defaults: { headers } } = this.client,
       requestHeaders = this.client.useBeforeCallback(headers);
 
-    _promise = this.sendQuery(
-      requestHeaders,
-      downloadProgressCallback,
-      operation
-    );
+    _promise = this.sendQuery(requestHeaders, config, operation);
   } else {
-    _promise = this.sendQuery(null, downloadProgressCallback, operation);
+    _promise = this.sendQuery(null, config, operation);
   }
   return _promise;
 };
 
-Subscriber.prototype.subscribeToMutation = function(
-  operation,
-  uploadProgressCallback
-) {
-  let _promise = null;
-  if (this.client.isUseBeforeCallbackSupplied) {
-    let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useAfterCallback(headers);
-
-    _promise = this.sendMutation(
-      requestHeaders,
-      uploadProgressCallback,
-      operation
-    );
-  } else {
-    _promise = this.sendMutation(null, uploadProgressCallback, operation);
-  }
-  return _promise;
-};
-
-Subscriber.prototype.sendMutation = function(
-  headers,
-  uploadProgressCallback,
-  operation
-) {
+Subscriber.prototype.sendQuery = function(headers, config, operation) {
   let _promise = new Promise((resolve, reject) => {
-    let _uploadProgressCallback = uploadProgressCallback || undefined;
+    let _config = config || {};
     if (headers) this.client.defaults.headers = headers;
     this.client[operation]({
-      onUploadProgress: _uploadProgressCallback
+      ..._config
     })
       .then(response => {
         this.sendResponseToCallback(response);
@@ -68,16 +37,25 @@ Subscriber.prototype.sendMutation = function(
   return _promise;
 };
 
-Subscriber.prototype.sendQuery = function(
-  headers,
-  downloadProgressCallback,
-  operation
-) {
+Subscriber.prototype.subscribeToMutation = function(operation, config) {
+  let _promise = null;
+  if (this.client.isUseBeforeCallbackSupplied) {
+    let { defaults: { headers } } = this.client,
+      requestHeaders = this.client.useBeforeCallback(headers);
+
+    _promise = this.sendMutation(requestHeaders, config, operation);
+  } else {
+    _promise = this.sendMutation(null, config, operation);
+  }
+  return _promise;
+};
+
+Subscriber.prototype.sendMutation = function(headers, config, operation) {
   let _promise = new Promise((resolve, reject) => {
-    let _downloadProgressCallback = downloadProgressCallback || undefined;
+    let _config = config || {};
     if (headers) this.client.defaults.headers = headers;
     this.client[operation]({
-      onDownloadProgress: _downloadProgressCallback
+      ..._config
     })
       .then(response => {
         this.sendResponseToCallback(response);

@@ -16,10 +16,10 @@ class QueryAdvanced extends React.PureComponent {
     );
     invariant(
       options &&
-      options.variables &&
-      typeof options.variables === "object" &&
-      options.variables instanceof Object,
-      "[variables] property in props [options] and must be of type [object]"
+        options.config &&
+        typeof options.config === "object" &&
+        options.config instanceof Object,
+      "[config] property in props [options] and must be of type [object]"
     );
     invariant(
       operation.slice(0, 3).toUpperCase() === "GET",
@@ -35,10 +35,8 @@ class QueryAdvanced extends React.PureComponent {
     operation: PropTypes.string.isRequired,
     skip: PropTypes.bool,
     options: PropTypes.shape({
-      variables: PropTypes.object,
-      endpoint: PropTypes.string,
-      fetchPolicy: PropTypes.string,
-      onDownloadProgress: PropTypes.func
+      config: PropTypes.object,
+      fetchPolicy: PropTypes.string
     }),
     client: PropTypes.any,
     store: PropTypes.any
@@ -119,12 +117,13 @@ class QueryAdvanced extends React.PureComponent {
     });
   };
 
-  refetchQuery = config => {
-    let { skip, operation, options: { onDownloadProgress } } = this.props;
+  refetchQuery = passedConfig => {
+    let { skip, operation, options: { config } } = this.props,
+      _config = passedConfig || config;
     if (!skip) {
       this.setLoadingDataState();
       this.subscriber
-        .subscribeToQuery(operation, onDownloadProgress)
+        .subscribeToQuery(operation, _config)
         .then(response => this.setSuccessDataState(response.data))
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
@@ -132,19 +131,21 @@ class QueryAdvanced extends React.PureComponent {
     }
   };
 
-  fetchMore = config => {
-    let { skip, operation } = this.props,
-      { updateQuery } = config;
+  fetchMore = options => {
+    let { skip, operation, options: { config }, store } = this.props,
+      { updateQuery } = options;
     if (!skip) {
-      invariant(updateQuery, "[updateQuery] is needed in [data.fetchMore]");
+      invariant(updateQuery, "[updateQuery] is needed in [options.fetchMore]");
       this.setLoadingDataState();
+      let _config = options.config || config;
+
       this.subscriber
-        .subscribeToQuery(operation)
+        .subscribeToQuery(operation, _config)
         .then(response => {
           let _result = updateQuery(this.state[operation].data, {
             fetchMoreResult: response.data
           });
-          this.setSuccessDataState(response.data);
+          this.setSuccessDataState(_result);
         })
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
