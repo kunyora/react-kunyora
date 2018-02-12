@@ -13,14 +13,16 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: "babel-loader",
-        exclude: "/node_modules/",
+        exclude: "/node_modules/"
       }
     ]
   },
   output: {
     path: path.join(__dirname, "dist"),
     publicPath: "/dists/",
-    filename: "react-composer.js"
+    filename: "react-composer.js",
+    libraryTarget: "commonjs2"
   },
+  target: "node",
   devtool: "source-map"
 };

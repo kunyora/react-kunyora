@@ -169,7 +169,9 @@ function mapStateToProps(state) {
   };
 }
 
-export const Query = ({ children, ...rest }) => (
+let Query = null;
+
+export default (Query = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
@@ -182,4 +184,4 @@ export const Query = ({ children, ...rest }) => (
       );
     }}
   </Connect>
-);
+));

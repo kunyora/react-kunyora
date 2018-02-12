@@ -55,7 +55,9 @@ class ConnectAdvanced extends React.PureComponent {
   }
 }
 
-export const Connect = ({ children, ...rest }) => (
+let Connect = null;
+
+export default (Connect = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
     {context => {
       let composedProps = { ...context, ...rest };
@@ -66,4 +68,4 @@ export const Connect = ({ children, ...rest }) => (
       );
     }}
   </ComposerContext.Consumer>
-);
+));

@@ -1,4 +1,6 @@
-export default {
+let Store = null;
+
+export default (Store = {
   state: {},
 
   callbacks: [],
@@ -28,4 +30,4 @@ export default {
   getState: function() {
     return this.state;
   }
-};
+});

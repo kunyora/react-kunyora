@@ -100,7 +100,9 @@ class MutationAdvanced extends React.PureComponent {
   }
 }
 
-export const Mutation = ({ children, ...rest }) => (
+let Mutation = null;
+
+export default (Mutation = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
     {context => {
       let composedProps = { ...context, ...rest };
@@ -111,4 +113,4 @@ export const Mutation = ({ children, ...rest }) => (
       );
     }}
   </ComposerContext.Consumer>
-);
+));
