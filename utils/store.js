@@ -7,8 +7,9 @@ export default (Store = {
 
   listen: function(callback) {
     this.callbacks.push(callback);
+    var _this = this;
     return function() {
-      this.callbacks.splice(this.callbacks.indexOf(callback), 1);
+      _this.callbacks.splice(_this.callbacks.indexOf(callback), 1);
       callback = null;
     };
   },
