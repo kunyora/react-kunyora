@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import invariant from "invariant";
 
-import { Connect } from "./Connect";
+import Connect from "./Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 
