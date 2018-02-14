@@ -14,13 +14,15 @@ class QueryAdvanced extends React.PureComponent {
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
     );
-    invariant(
-      options &&
-        options.config &&
-        typeof options.config === "object" &&
-        options.config instanceof Object,
-      "[config] property in props [options] and must be of type [object]"
-    );
+    if (options && options.config) {
+      invariant(
+        options &&
+          options.config &&
+          typeof options.config === "object" &&
+          options.config instanceof Object,
+        "[config] property in props [options] and must be of type [object] for your Query components"
+      );
+    }
     invariant(
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
@@ -43,8 +45,9 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   componentDidMount() {
-    let { options: { fetchPolicy }, queries, operation } = this.props;
-    let _fetchPolicy = fetchPolicy || "cache-first";
+    let { options, queries, operation } = this.props,
+      _options = options || {},
+      _fetchPolicy = _options.fetchPolicy || "cache-first";
     switch (_fetchPolicy) {
       case "network-only":
         this.refetchQuery(undefined);
@@ -57,7 +60,8 @@ class QueryAdvanced extends React.PureComponent {
         this.refetchQuery(undefined);
         break;
       default:
-        if (queries[operation]) {
+        let _queries = queries || {};
+        if (_queries[operation]) {
           this.setInitialStateFromStoreAfterMount();
         } else {
           this.refetchQuery(undefined);
@@ -118,8 +122,9 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   refetchQuery = passedConfig => {
-    let { skip, operation, options: { config } } = this.props,
-      _config = passedConfig || config;
+    let { skip, operation, options } = this.props,
+      _options = options || {},
+      _config = passedConfig || _options.config || {};
     if (!skip) {
       this.setLoadingDataState();
       this.subscriber
@@ -131,13 +136,14 @@ class QueryAdvanced extends React.PureComponent {
     }
   };
 
-  fetchMore = options => {
-    let { skip, operation, options: { config }, store } = this.props,
-      { updateQuery } = options;
+  fetchMore = fetchMoreOptions => {
+    let { skip, operation, options, store } = this.props,
+      _options = options || {},
+      { updateQuery } = fetchMoreOptions;
     if (!skip) {
       invariant(updateQuery, "[updateQuery] is needed in [options.fetchMore]");
       this.setLoadingDataState();
-      let _config = options.config || config;
+      let _config = fetchMoreOptions.config || _options.config || {};
 
       this.subscriber
         .subscribeToQuery(operation, _config)

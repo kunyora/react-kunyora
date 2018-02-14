@@ -14,13 +14,15 @@ class MutationAdvanced extends React.PureComponent {
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
     );
-    invariant(
-      options &&
-        options.config &&
-        typeof options.config === "object" &&
-        options.config instanceof Object,
-      "[config] property is required in props [options] and must be of type [object]"
-    );
+    if (options && options.config) {
+      invariant(
+        options &&
+          options.config &&
+          typeof options.config === "object" &&
+          options.config instanceof Object,
+        "[config] property is required in props [options] and must be of type [object] for your Mutation component"
+      );
+    }
     invariant(
       operation.slice(0, 6).toUpperCase() === "CREATE" ||
         operation.slice(0, 6).toUpperCase() === "UPDATE" ||
@@ -79,8 +81,9 @@ class MutationAdvanced extends React.PureComponent {
   };
 
   mutate = passedConfig => {
-    let { operation, options: { config }, refetchQueries } = this.props,
-      _config = passedConfig || config;
+    let { operation, options, refetchQueries } = this.props,
+      _options = options || {},
+      _config = passedConfig || _options.config || {};
     this.setLoadingDataState();
     this.subscriber
       .subscribeToMutation(operation, _config)

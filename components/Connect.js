@@ -5,7 +5,12 @@ import _ from "lodash";
 import { ComposerContext } from "./ComposerProvider";
 
 class ConnectAdvanced extends React.PureComponent {
-  state = {};
+  constructor(props, context) {
+    super(props, context);
+    this.subscribe();
+    let { nextState } = this.updateState();
+    this.state = { ...nextState };
+  }
 
   static propTypes = {
     mapStateToProps: PropTypes.func,
@@ -14,11 +19,6 @@ class ConnectAdvanced extends React.PureComponent {
     client: PropTypes.any
   };
 
-  componentDidMount() {
-    this.subscribe();
-    this.updateState();
-  }
-
   componentWillUnmount() {
     this.unsubscribe();
   }
@@ -26,27 +26,33 @@ class ConnectAdvanced extends React.PureComponent {
   updateState = () => {
     let { mapStateToProps, store: { getState, listen } } = this.props;
 
+    let componentState = this.state || {};
+
     let shouldSetState = false,
       nextProps = mapStateToProps(getState()),
       nextState = Object.keys(nextProps).reduce((acc, key) => {
-        if (!_.isEqual(nextProps[key], this.state[key])) {
+        if (!_.isEqual(nextProps[key], componentState[key])) {
           shouldSetState = true;
           acc[key] = nextProps[key];
         } else {
-          acc[key] = this.state[key];
+          if (!(key in componentState)) shouldSetState = true;
+          acc[key] = componentState[key];
         }
+        return acc;
       }, {});
 
-    if (shouldSetState) {
-      this.setState({
-        ...nextState
-      });
-    }
+    return { shouldSetState, nextState };
   };
 
   subscribe = () => {
-    this.unsubscribe = listen(function() {
-      this.updateState();
+    let { store: { listen } } = this.props;
+    this.unsubscribe = listen(() => {
+      let { shouldSetState, nextState } = this.updateState();
+      if (shouldSetState) {
+        this.setState({
+          ...nextState
+        });
+      }
     });
   };
 
