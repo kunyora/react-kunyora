@@ -99,6 +99,7 @@ class MutationAdvanced extends React.PureComponent {
   };
 
   render() {
+    let { operation } = this.props;
     return this.props.children(this.state[operation], this.mutate);
   }
 }
