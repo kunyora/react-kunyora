@@ -28,7 +28,7 @@ class QueryAdvanced extends React.PureComponent {
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
     this.state = {
-      [operation]: { isInitialDataSet: false, loading: true }
+      [operation]: { isInitialDataSet: false, loading: false }
     };
     this.subscriber = new Subscriber(store, client);
   }
@@ -47,20 +47,28 @@ class QueryAdvanced extends React.PureComponent {
   componentDidMount() {
     let { options, queries, operation } = this.props,
       _options = options || {},
-      _fetchPolicy = _options.fetchPolicy || "cache-first";
+      _fetchPolicy = _options.fetchPolicy || "cache-first",
+      _queries = queries || {};
     switch (_fetchPolicy) {
       case "network-only":
         this.refetchQuery(undefined);
         break;
       case "cache-only":
+        invariant(
+          _queries[operation],
+          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first network policy"
+        );
         this.setInitialStateFromStoreAfterMount();
         break;
       case "cache-and-network":
+        invariant(
+          _queries[operation],
+          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first network policy"
+        );
         this.setInitialStateFromStoreAfterMount();
         this.refetchQuery(undefined);
         break;
       default:
-        let _queries = queries || {};
         if (_queries[operation]) {
           this.setInitialStateFromStoreAfterMount();
         } else {
@@ -130,7 +138,7 @@ class QueryAdvanced extends React.PureComponent {
       this.subscriber
         .subscribeToQuery(operation, _config)
         .then(response => {
-          this.setSuccessDataState(response.data)
+          this.setSuccessDataState(response.data);
         })
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
