@@ -129,7 +129,9 @@ class QueryAdvanced extends React.PureComponent {
       this.setLoadingDataState();
       this.subscriber
         .subscribeToQuery(operation, _config)
-        .then(response => this.setSuccessDataState(response.data))
+        .then(response => {
+          this.setSuccessDataState(response.data)
+        })
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
         );
