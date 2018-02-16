@@ -55,7 +55,7 @@ class MutationAdvanced extends React.PureComponent {
     let { operation } = this.props;
     this.setState({
       [operation]: {
-        loading: !this.state[operation]
+        loading: !this.state[operation].loading
       }
     });
   };
@@ -85,12 +85,12 @@ class MutationAdvanced extends React.PureComponent {
       _options = options || {},
       _config = passedConfig || _options.config || {};
     this.setLoadingDataState();
-    this.subscriber
+    return this.subscriber
       .subscribeToMutation(operation, _config)
       .then(response => {
         this.setLoadingDataState();
         if (refetchQueries) this.refetchQueries(refetchQueries);
-        return response.data;
+        return Promise.resolve(response.data);
       })
       .catch(error => {
         this.setLoadingDataState();

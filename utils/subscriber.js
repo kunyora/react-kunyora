@@ -59,7 +59,7 @@ Subscriber.prototype.sendMutation = function(headers, config, operation) {
     })
       .then(response => {
         this.sendResponseToCallback(response);
-        return response;
+        resolve(response);
       })
       .catch(error => {
         this.sendResponseToCallback(error);
