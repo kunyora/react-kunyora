@@ -65,7 +65,7 @@ class MutationAdvanced extends React.PureComponent {
 
     refetchConfig.forEach(({ operation, config }) => {
       this.subscriber
-        .subscribeToQuery(operation, config)
+        .subscribeToQuery(operation, config || {})
         .then(response => {
           let overallState = store.getState()[types.SET_QUERY_DATA] || {},
             _newState = { ...overallState, [operation]: response.data };
@@ -81,9 +81,8 @@ class MutationAdvanced extends React.PureComponent {
   };
 
   mutate = passedConfig => {
-    let { operation, options, refetchQueries } = this.props,
-      _options = options || {},
-      _config = passedConfig || _options.config || {};
+    let { operation, options: { refetchQueries, config } } = this.props,
+      _config = passedConfig || config || {};
     this.setLoadingDataState();
     return this.subscriber
       .subscribeToMutation(operation, _config)
