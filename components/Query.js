@@ -56,14 +56,14 @@ class QueryAdvanced extends React.PureComponent {
       case "cache-only":
         invariant(
           _queries[operation],
-          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first network policy"
+          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         this.setInitialStateFromStoreAfterMount();
         break;
       case "cache-and-network":
         invariant(
           _queries[operation],
-          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first network policy"
+          "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         this.setInitialStateFromStoreAfterMount();
         this.refetchQuery(undefined);
@@ -151,7 +151,10 @@ class QueryAdvanced extends React.PureComponent {
       _options = options || {},
       { updateQuery } = fetchMoreOptions;
     if (!skip) {
-      invariant(updateQuery, "[updateQuery] is needed in [options.fetchMore]");
+      invariant(
+        updateQuery,
+        "[updateQuery] is needed as a config parameter in [options.fetchMore]"
+      );
       this.setLoadingDataState();
       let _config = fetchMoreOptions.config || _options.config || {};
 
@@ -161,6 +164,10 @@ class QueryAdvanced extends React.PureComponent {
           let _result = updateQuery(this.state[operation].data, {
             fetchMoreResult: response.data
           });
+          invariant(
+            _result,
+            "A result of any type must be returned to form the new state from the updateQuery config option"
+          );
           this.setSuccessDataState(_result);
         })
         .catch(error =>
