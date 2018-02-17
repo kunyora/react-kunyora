@@ -38,7 +38,12 @@ class QueryAdvanced extends React.PureComponent {
     skip: PropTypes.bool,
     options: PropTypes.shape({
       config: PropTypes.object,
-      fetchPolicy: PropTypes.string
+      fetchPolicy: PropTypes.oneOf([
+        "cache-first",
+        "network-only",
+        "cache-only",
+        "cache-and-network"
+      ])
     }),
     client: PropTypes.any,
     store: PropTypes.any
