@@ -9,7 +9,7 @@ import Subscriber from "../utils/subscriber";
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { route, resources, store, client, router } = props;
+    let { route, resources, store, client, router, requestPolicy } = props;
     invariant(
       typeof route === "string",
       "Props [route] must be passed to component Router and it must be of type string"
@@ -21,6 +21,11 @@ class RouterAdvanced extends React.PureComponent {
     invariant(
       router,
       "Seems like you don't have a router installed or a router wasn't supplied to the ComposerProvider Top Element. \n Please [npm install] a router suitable for your routing engine and add it to the [ComposerProvider] Top level element"
+    );
+    this.requestPolicy = requestPolicy || "request-all";
+    invariant(
+      this.validateRequestPolicy(this.requestPolicy),
+      "You supplied an invalid requestPolicy prop, this prop can only be of the value \n 1) request-all 2) request-first-n 3) request-last-n \n where 1 <= n <= infinity"
     );
     this.state = {
       [route]: { loading: false }
@@ -42,6 +47,13 @@ class RouterAdvanced extends React.PureComponent {
     store: PropTypes.any,
     router: PropTypes.any
   };
+
+  validateRequestPolicy = requestPolicy => {
+    let pattern = /^request-all$|^request-first-[1-9]{1,}[0-9]*$|^request-last-[1-9]{1,}[0-9]*$/i;
+    return pattern.test(requestPolicy);
+  };
+
+  push = () => {};
 }
 
 let Router = null;
