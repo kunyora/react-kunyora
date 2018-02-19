@@ -16,7 +16,7 @@ export default (Store = {
 
   performAsyncAction: function(func) {
     function runAsync() {
-      setTimeout(func, 0);
+      setTimeout(() => func(Store), 0);
     }
     runAsync();
   },

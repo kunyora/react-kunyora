@@ -73,9 +73,43 @@ class RouterAdvanced extends React.PureComponent {
       store.dispatch(types.SET_QUERY_DATA, _newState);
     });
 
-    
+    this.completeProgressCount();
     //route the user to the next screen **** for now we console.log to know the states have been set *****
     console.log(store.getState());
+  };
+
+  completeProgressCount = () => {
+    let { route, store } = this.props;
+    store.performAsyncAction(function(_store) {
+      return (function(store, route) {
+        try {
+          let start = window.performance.now(),
+            duration = 1000,
+            animation = requestAnimationFrame(function animate(time) {
+              if (!animation) {
+                return;
+              }
+              let movement = (time - start) / duration,
+                overallState =
+                  store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
+                _movement =
+                  movement >= 1 ? 0 : movement < 50 / 100 ? 50 : movement * 100;
+
+              store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
+                ...overallState,
+                [route]: movement * 100
+              });
+              if (movement >= 1) animation = null;
+              else requestAnimationFrame(animate);
+            });
+        } catch (e) {
+          invariant(
+            window,
+            "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
+          );
+        }
+      })(_store, route);
+    });
   };
 
   push = () => {
