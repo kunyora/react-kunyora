@@ -102,7 +102,7 @@ class RouterAdvanced extends React.PureComponent {
               if (movement >= 1) animation = null;
               else requestAnimationFrame(animate);
             });
-        } catch (e) {
+        } catch (error) {
           invariant(
             window,
             "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
@@ -131,8 +131,9 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { route, progress } = this.props;
-    return this.props.children(this.state[route], progress[route], this.push);
+    let { route, progress } = this.props,
+      _progress = progress || {};
+    return this.props.children(this.state[route], _progress[route], this.push);
   }
 }
 
@@ -150,9 +151,9 @@ export default (Router = ({ children, ...rest }) => (
       let composedProps = { ...context, ...rest, ...props };
       return (
         <RouterAdvanced {...composedProps}>
-          {(routerState, fetchProgress, push) => {
-            children(routerState, fetchProgress, push);
-          }}
+          {(routerState, fetchProgress, push) =>
+            children(routerState, fetchProgress, push)
+          }
         </RouterAdvanced>
       );
     }}
