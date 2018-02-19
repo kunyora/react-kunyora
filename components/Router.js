@@ -64,12 +64,24 @@ class RouterAdvanced extends React.PureComponent {
     });
   };
 
+  setSuccessDataState = datas => {
+    let { resources, store } = this.props;
+
+    resources.forEach(({ operation }, i) => {
+      let overallState = store.getState()[types.SET_QUERY_DATA] || {},
+        _newState = { ...overallState, [operation]: datas[i] };
+      store.dispatch(types.SET_QUERY_DATA, _newState);
+    });
+
+    //route the user to the next screen
+  };
+
   push = () => {
     let { resources, requestPolicy, route } = this.props;
     if (/^request-all$/i.test(requestPolicy)) {
       this.subscriber
         .subscribeToMultiConcurrentQueries(resources, progress => {})
-        .then(response => {})
+        .then(response => this.setSuccessDataState(response))
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
         );
