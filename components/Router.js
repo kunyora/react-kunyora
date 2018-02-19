@@ -30,7 +30,7 @@ class RouterAdvanced extends React.PureComponent {
     this.state = {
       [route]: {}
     };
-    this.subscriber = new Subscriber(store, context, true);
+    this.subscriber = new Subscriber(store, client, true);
   }
 
   static propTypes = {
@@ -69,7 +69,7 @@ class RouterAdvanced extends React.PureComponent {
 
     resources.forEach(({ operation }, i) => {
       let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-        _newState = { ...overallState, [operation]: datas[i] };
+        _newState = { ...overallState, [operation]: datas[i].data };
       store.dispatch(types.SET_QUERY_DATA, _newState);
     });
 
@@ -92,12 +92,16 @@ class RouterAdvanced extends React.PureComponent {
               let movement = (time - start) / duration,
                 overallState =
                   store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
-                _movement =
-                  movement >= 1 ? 0 : movement < 50 / 100 ? 50 : movement * 100;
+                _movement = 0;
+
+              if (movement >= 1) {
+                _movement = 0;
+              } else if (movement <= 0.5) _movement = 50;
+              else _movement = movement * 100;
 
               store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
                 ...overallState,
-                [route]: movement * 100
+                [route]: _movement
               });
               if (movement >= 1) animation = null;
               else requestAnimationFrame(animate);
@@ -116,7 +120,7 @@ class RouterAdvanced extends React.PureComponent {
     let { resources, requestPolicy, route } = this.props;
     if (/^request-all$/i.test(requestPolicy)) {
       this.subscriber
-        .subscribeToMultiConcurrentQueies(resources, progress => {
+        .subscribeToMultiConcurrentQueries(resources, progress => {
           let { store, route } = this.props,
             overallState =
               store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},

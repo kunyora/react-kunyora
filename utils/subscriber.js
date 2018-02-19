@@ -100,7 +100,6 @@ Subscriber.prototype.sendMultipleConcurrentQueries = function(
   progressCallback
 ) {
   let _promise = new Promise((resolve, reject) => {
-    let _config = config || {};
     if (headers) this.client.defaults.headers = headers;
     Promise.all([
       ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
@@ -123,9 +122,10 @@ Subscriber.prototype.composeAxiosInstance = function(
 ) {
   let reducedAxiosReduced = arrayOfQueryConfig.reduce(
     (acc, { operation, config }) => {
+      let _config = config || {};
       acc.push(
         this.client[operation]({
-          ...config,
+          ..._config,
           onDownloadProgress: e => {
             let requestProgress = e.loaded / e.total * 100;
             this.progressCount += requestProgress;
