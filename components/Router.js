@@ -28,7 +28,7 @@ class RouterAdvanced extends React.PureComponent {
       "You supplied an invalid requestPolicy prop, this prop can only be of the value \n 1) request-all 2) request-first-n 3) request-last-n \n where 1 <= n <= infinity"
     );
     this.state = {
-      [route]: { loading: false }
+      [route]: {}
     };
     this.subscriber = new Subscriber(store, context, true);
   }
@@ -45,7 +45,8 @@ class RouterAdvanced extends React.PureComponent {
     requestPolicy: PropTypes.string,
     client: PropTypes.any,
     store: PropTypes.any,
-    router: PropTypes.any
+    router: PropTypes.any,
+    progress: PropTypes.any
   };
 
   validateRequestPolicy = requestPolicy => {
@@ -58,7 +59,6 @@ class RouterAdvanced extends React.PureComponent {
     this.setState({
       [route]: {
         ...this.state[route],
-        loading: false,
         error
       }
     });
@@ -129,6 +129,11 @@ class RouterAdvanced extends React.PureComponent {
         );
     }
   };
+
+  render() {
+    let { route, progress } = this.props;
+    return this.props.children(this.state[route], progress[route], this.push);
+  }
 }
 
 function mapStateToProps(state) {
@@ -143,7 +148,13 @@ export default (Router = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
-      return <RouterAdvanced {...composedProps} />;
+      return (
+        <RouterAdvanced {...composedProps}>
+          {(routerState, fetchProgress, push) => {
+            children(routerState, fetchProgress, push);
+          }}
+        </RouterAdvanced>
+      );
     }}
   </Connect>
 ));
