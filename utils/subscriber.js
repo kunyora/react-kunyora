@@ -126,7 +126,11 @@ Subscriber.prototype.composeAxiosInstance = function(
       acc.push(
         this.client[operation]({
           ...config,
-          onDownloadProgress: e => {}
+          onDownloadProgress: e => {
+            let requestProgress = e.loaded / e.total * 100;
+            this.progressCount += requestProgress;
+            progressCallback(this.progressCount / arrayOfQueryConfig.length);
+          }
         })
       );
       return acc;
