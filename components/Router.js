@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import invariant from "invariant";
 
 import * as types from "../types";
-import { ComposerContext } from "./ComposerProvider";
+import Connect from "./Connect";
 import Subscriber from "../utils/subscriber";
 
 class RouterAdvanced extends React.PureComponent {
@@ -30,7 +30,7 @@ class RouterAdvanced extends React.PureComponent {
     this.state = {
       [route]: { loading: false }
     };
-    this.subscriber = new Subscriber(store, context);
+    this.subscriber = new Subscriber(store, context, true);
   }
 
   static propTypes = {
@@ -53,16 +53,43 @@ class RouterAdvanced extends React.PureComponent {
     return pattern.test(requestPolicy);
   };
 
-  push = () => {};
+  setErrorDataState = error => {
+    let { route } = this.props;
+    this.setState({
+      [route]: {
+        ...this.state[route],
+        loading: false,
+        error
+      }
+    });
+  };
+
+  push = () => {
+    let { resources, requestPolicy, route } = this.props;
+    if (/^request-all$/i.test(requestPolicy)) {
+      this.subscriber
+        .subscribeToMultiConcurrentQueries(resources, progress => {})
+        .then(response => {})
+        .catch(error =>
+          this.setErrorDataState(error.response || error.message)
+        );
+    }
+  };
+}
+
+function mapStateToProps(state) {
+  return {
+    progress: state[types.SET_PAGE_DOWNLOAD_PROGRESS]
+  };
 }
 
 let Router = null;
 
 export default (Router = ({ children, ...rest }) => (
-  <ComposerContext.Consumer>
-    {context => {
-      let composedProps = { ...context, ...rest };
+  <Connect mapStateToProps={mapStateToProps}>
+    {(props, context) => {
+      let composedProps = { ...context, ...rest, ...props };
       return <RouterAdvanced {...composedProps} />;
     }}
-  </ComposerContext.Consumer>
+  </Connect>
 ));
