@@ -73,14 +73,22 @@ class RouterAdvanced extends React.PureComponent {
       store.dispatch(types.SET_QUERY_DATA, _newState);
     });
 
-    //route the user to the next screen
+    
+    //route the user to the next screen **** for now we console.log to know the states have been set *****
+    console.log(store.getState());
   };
 
   push = () => {
     let { resources, requestPolicy, route } = this.props;
     if (/^request-all$/i.test(requestPolicy)) {
       this.subscriber
-        .subscribeToMultiConcurrentQueries(resources, progress => {})
+        .subscribeToMultiConcurrentQueies(resources, progress => {
+          let { store, route } = this.props,
+            overallState =
+              store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
+            _newState = { ...overallState, [route]: progress / 2 };
+          store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, _newState);
+        })
         .then(response => this.setSuccessDataState(response))
         .catch(error =>
           this.setErrorDataState(error.response || error.message)

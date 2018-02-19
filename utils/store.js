@@ -14,6 +14,13 @@ export default (Store = {
     };
   },
 
+  performAsyncAction: function(func) {
+    function runAsync() {
+      setTimeout(func, 0);
+    }
+    runAsync();
+  },
+
   dispatch: function(action, args) {
     Store.state = {
       ...Store.state,
