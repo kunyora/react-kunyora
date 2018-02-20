@@ -15,7 +15,6 @@ class ConnectAdvanced extends React.PureComponent {
   static propTypes = {
     mapStateToProps: PropTypes.func,
     store: PropTypes.any,
-    router: PropTypes.any,
     client: PropTypes.any
   };
 

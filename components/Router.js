@@ -9,18 +9,14 @@ import Subscriber from "../utils/subscriber";
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { route, resources, store, client, router, requestPolicy } = props;
+    let { name, resources, store, client, requestPolicy } = props;
     invariant(
-      typeof route === "string",
-      "Props [route] must be passed to component Router and it must be of type string"
+      typeof name === "string",
+      "Props [name] must be passed to component Router and it must be of type string"
     );
     invariant(
       resources && resources instanceof Array,
       "[resources] property is required in props passed to the Router component \n and it must be of type Array"
-    );
-    invariant(
-      router,
-      "Seems like you don't have a router installed or a router wasn't supplied to the ComposerProvider Top Element. \n Please [npm install] a router suitable for your routing engine and add it to the [ComposerProvider] Top level element"
     );
     this.requestPolicy = requestPolicy || "request-all";
     invariant(
@@ -28,13 +24,13 @@ class RouterAdvanced extends React.PureComponent {
       "You supplied an invalid requestPolicy prop, this prop can only be of the value \n 1) request-all 2) request-first-n 3) request-last-n \n where 1 <= n <= infinity"
     );
     this.state = {
-      [route]: {}
+      [name]: {}
     };
     this.subscriber = new Subscriber(store, client, true);
   }
 
   static propTypes = {
-    route: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     componentUri: PropTypes.string,
     resources: PropTypes.arrayOf(
       PropTypes.shape({
@@ -45,7 +41,6 @@ class RouterAdvanced extends React.PureComponent {
     requestPolicy: PropTypes.string,
     client: PropTypes.any,
     store: PropTypes.any,
-    router: PropTypes.any,
     progress: PropTypes.any
   };
 
@@ -55,10 +50,10 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   setErrorDataState = error => {
-    let { route } = this.props;
+    let { name } = this.props;
     this.setState({
-      [route]: {
-        ...this.state[route],
+      [name]: {
+        ...this.state[name],
         error
       }
     });
@@ -74,14 +69,14 @@ class RouterAdvanced extends React.PureComponent {
     });
 
     this.completeProgressCount();
-    //route the user to the next screen **** for now we console.log to know the states have been set *****
+    //name the user to the next screen **** for now we console.log to know the states have been set *****
     console.log(store.getState());
   };
 
   completeProgressCount = () => {
-    let { route, store } = this.props;
+    let { name, store } = this.props;
     store.performAsyncAction(function(_store) {
-      return (function(store, route) {
+      return (function(store, name) {
         try {
           let start = window.performance.now(),
             duration = 1000,
@@ -101,7 +96,7 @@ class RouterAdvanced extends React.PureComponent {
 
               store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
                 ...overallState,
-                [route]: _movement
+                [name]: _movement
               });
               if (movement >= 1) animation = null;
               else requestAnimationFrame(animate);
@@ -112,19 +107,19 @@ class RouterAdvanced extends React.PureComponent {
             "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
           );
         }
-      })(_store, route);
+      })(_store, name);
     });
   };
 
   push = () => {
-    let { resources, requestPolicy, route } = this.props;
+    let { resources, requestPolicy, name } = this.props;
     if (/^request-all$/i.test(requestPolicy)) {
       this.subscriber
         .subscribeToMultiConcurrentQueries(resources, progress => {
-          let { store, route } = this.props,
+          let { store, name } = this.props,
             overallState =
               store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
-            _newState = { ...overallState, [route]: progress / 2 };
+            _newState = { ...overallState, [name]: progress / 2 };
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, _newState);
         })
         .then(response => this.setSuccessDataState(response))
@@ -135,9 +130,9 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { route, progress } = this.props,
+    let { name, progress } = this.props,
       _progress = progress || {};
-    return this.props.children(this.state[route], _progress[route], this.push);
+    return this.props.children(this.state[name], _progress[name], this.push);
   }
 }
 
