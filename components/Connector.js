@@ -11,7 +11,7 @@ class ConnectorAdvanced extends React.PureComponent {
     let { name } = this.props;
     invariant(
       typeof name === "string",
-      "The [props] must be passed to the Connector component and must be of type [string]"
+      "The [name] prop must be passed to the Connector component and must be of type [string]"
     );
   }
 
