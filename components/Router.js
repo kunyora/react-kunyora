@@ -9,14 +9,7 @@ import Subscriber from "../utils/subscriber";
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let {
-      name,
-      resources,
-      store,
-      client,
-      requestPolicy,
-      onRequestRoute
-    } = props;
+    let { name, resources, store, client, onRequestRoute } = props;
     invariant(
       typeof name === "string",
       "Props [name] must be passed to component Router and it must be of type string"
@@ -29,11 +22,8 @@ class RouterAdvanced extends React.PureComponent {
       resources && resources instanceof Array,
       "[resources] property is required in props passed to the Router component \n and it must be of type Array"
     );
-    this.requestPolicy = requestPolicy || "request-all";
-    invariant(
-      this.validateRequestPolicy(this.requestPolicy),
-      "You supplied an invalid requestPolicy prop, this prop can only be of the value \n 1) request-all 2) request-first-n 3) request-last-n \n where 1 <= n <= infinity"
-    );
+    //@we use this as a default because we felt it might be possible to specify later on in the feature the kind of requestPolicy that you want i.e request-first-1
+    this.requestPolicy = "request-all";
     this.state = {
       [name]: {}
     };
@@ -50,15 +40,9 @@ class RouterAdvanced extends React.PureComponent {
       })
     ).isRequired,
     onRequestRoute: PropTypes.func.isRequired,
-    requestPolicy: PropTypes.string,
     client: PropTypes.any,
     store: PropTypes.any,
     progress: PropTypes.any
-  };
-
-  validateRequestPolicy = requestPolicy => {
-    let pattern = /^request-all$|^request-first-[1-9]{1,}[0-9]*$|^request-last-[1-9]{1,}[0-9]*$/i;
-    return pattern.test(requestPolicy);
   };
 
   setErrorDataState = error => {
@@ -124,21 +108,17 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   push = () => {
-    let { resources, requestPolicy, name } = this.props;
-    if (/^request-all$/i.test(requestPolicy)) {
-      this.subscriber
-        .subscribeToMultiConcurrentQueries(resources, progress => {
-          let { store, name } = this.props,
-            overallState =
-              store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
-            _newState = { ...overallState, [name]: progress / 2 };
-          store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, _newState);
-        })
-        .then(response => this.setSuccessDataState(response))
-        .catch(error =>
-          this.setErrorDataState(error.response || error.message)
-        );
-    }
+    let { resources, name } = this.props;
+    this.subscriber
+      .subscribeToMultiConcurrentQueries(resources, progress => {
+        let { store, name } = this.props,
+          overallState =
+            store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
+          _newState = { ...overallState, [name]: progress / 2 };
+        store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, _newState);
+      })
+      .then(response => this.setSuccessDataState(response))
+      .catch(error => this.setErrorDataState(error.response || error.message));
   };
 
   render() {
