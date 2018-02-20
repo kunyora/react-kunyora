@@ -72,7 +72,7 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   setSuccessDataState = datas => {
-    let { resources, store } = this.props;
+    let { resources, store, onRequestRoute } = this.props;
 
     resources.forEach(({ operation }, i) => {
       let overallState = store.getState()[types.SET_QUERY_DATA] || {},
@@ -82,7 +82,7 @@ class RouterAdvanced extends React.PureComponent {
 
     this.completeProgressCount();
     //name the user to the next screen
-    this.onRequestRoute();
+    onRequestRoute();
   };
 
   completeProgressCount = () => {
