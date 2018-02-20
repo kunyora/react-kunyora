@@ -9,10 +9,21 @@ import Subscriber from "../utils/subscriber";
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { name, resources, store, client, requestPolicy } = props;
+    let {
+      name,
+      resources,
+      store,
+      client,
+      requestPolicy,
+      onRequestRoute
+    } = props;
     invariant(
       typeof name === "string",
       "Props [name] must be passed to component Router and it must be of type string"
+    );
+    invariant(
+      typeof onRequestRoute === "function",
+      "Props [onRequestRoute] must be passed to the component Router and it must be of type [function]"
     );
     invariant(
       resources && resources instanceof Array,
@@ -38,6 +49,7 @@ class RouterAdvanced extends React.PureComponent {
         config: PropTypes.object
       })
     ).isRequired,
+    onRequestRoute: PropTypes.func.isRequired,
     requestPolicy: PropTypes.string,
     client: PropTypes.any,
     store: PropTypes.any,
@@ -69,8 +81,8 @@ class RouterAdvanced extends React.PureComponent {
     });
 
     this.completeProgressCount();
-    //name the user to the next screen **** for now we console.log to know the states have been set *****
-    console.log(store.getState());
+    //name the user to the next screen
+    this.onRequestRoute();
   };
 
   completeProgressCount = () => {
