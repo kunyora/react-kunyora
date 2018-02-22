@@ -1,8 +1,9 @@
 import invariant from "invariant";
 
-function Subscriber(store, client, shouldInitHandshake) {
+function Subscriber(store, client, shouldInitHandshake, loader) {
   this.store = store;
   this.client = client;
+  this.loader = loader;
   if (shouldInitHandshake) this.progressCount = 0;
 }
 
@@ -101,9 +102,8 @@ Subscriber.prototype.sendMultipleConcurrentQueries = function(
 ) {
   let _promise = new Promise((resolve, reject) => {
     if (headers) this.client.defaults.headers = headers;
-    Promise.all([
-      ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
-    ])
+
+    this.buildRequestHandshakePromise(arrayOfQueryConfig, progressCallback)
       .then(response => {
         this.sendResponseToCallback(response);
         resolve(response);
@@ -113,6 +113,24 @@ Subscriber.prototype.sendMultipleConcurrentQueries = function(
         reject(error);
       });
   });
+  return _promise;
+};
+
+Subscriber.prototype.buildRequestHandshakePromise = function(
+  arrayOfQueryConfig,
+  progressCallback
+) {
+  let _promise = null;
+  if (!this.loader) {
+    _promise = Promise.all([
+      ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
+    ]);
+  } else {
+    _promise = Promise.all([
+      this.loader(),
+      ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
+    ]);
+  }
   return _promise;
 };
 
@@ -129,7 +147,8 @@ Subscriber.prototype.composeAxiosInstance = function(
           onDownloadProgress: e => {
             let requestProgress = e.loaded / e.total * 100;
             this.progressCount += requestProgress;
-            progressCallback(this.progressCount / arrayOfQueryConfig.length);
+            let _percentCount = this.progressCount / arrayOfQueryConfig.length;
+            progressCallback(_percentCount || 0);
           }
         })
       );

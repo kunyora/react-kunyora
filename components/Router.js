@@ -5,11 +5,12 @@ import invariant from "invariant";
 import * as types from "../types";
 import Connect from "./Connect";
 import Subscriber from "../utils/subscriber";
+import * as asyncActions from "../async_actions";
 
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { name, resources, store, client, onRequestRoute } = props;
+    let { name, resources, store, client, onRequestRoute, loader } = props;
     invariant(
       typeof name === "string",
       "Props [name] must be passed to component Router and it must be of type string"
@@ -22,17 +23,23 @@ class RouterAdvanced extends React.PureComponent {
       resources && resources instanceof Array,
       "[resources] property is required in props passed to the Router component \n and it must be of type Array"
     );
+    if (loader) {
+      invariant(
+        typeof loader === "function",
+        "The [loader] props supplied to Router component must be of type [function]"
+      );
+    }
     //@we use this as a default because we felt it might be possible to specify later on in the feature the kind of requestPolicy that you want i.e request-first-1
     this.requestPolicy = "request-all";
     this.state = {
       [name]: {}
     };
-    this.subscriber = new Subscriber(store, client, true);
+    this.subscriber = new Subscriber(store, client, true, loader);
   }
 
   static propTypes = {
     name: PropTypes.string.isRequired,
-    componentUri: PropTypes.string,
+    loader: PropTypes.func,
     resources: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
@@ -71,40 +78,7 @@ class RouterAdvanced extends React.PureComponent {
 
   completeProgressCount = () => {
     let { name, store } = this.props;
-    store.performAsyncAction(function(_store) {
-      return (function(store, name) {
-        try {
-          let start = window.performance.now(),
-            duration = 1000,
-            animation = requestAnimationFrame(function animate(time) {
-              if (!animation) {
-                return;
-              }
-              let movement = (time - start) / duration,
-                overallState =
-                  store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
-                _movement = 0;
-
-              if (movement >= 1) {
-                _movement = 0;
-              } else if (movement <= 0.5) _movement = 50;
-              else _movement = movement * 100;
-
-              store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
-                ...overallState,
-                [name]: _movement
-              });
-              if (movement >= 1) animation = null;
-              else requestAnimationFrame(animate);
-            });
-        } catch (error) {
-          invariant(
-            window,
-            "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
-          );
-        }
-      })(_store, name);
-    });
+    store.performAsyncAction(asyncActions.completeProgressCount(name));
   };
 
   push = () => {
