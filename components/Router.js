@@ -43,7 +43,8 @@ class RouterAdvanced extends React.PureComponent {
     resources: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
-        config: PropTypes.object
+        config: PropTypes.object,
+        fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
       })
     ).isRequired,
     onRequestRoute: PropTypes.func.isRequired,

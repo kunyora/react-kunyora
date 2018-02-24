@@ -106,7 +106,7 @@ Subscriber.prototype.sendMultipleConcurrentQueries = function(
     this.buildRequestHandshakePromise(arrayOfQueryConfig, progressCallback)
       .then(response => {
         this.sendResponseToCallback(response);
-        resolve(response);
+        resolve(this.loader ? response.splice(1) : response);
       })
       .catch(error => {
         this.sendResponseToCallback(error);
