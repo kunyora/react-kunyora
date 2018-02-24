@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
-import { ComposerContext } from "./ComposerProvider";
+import { ComposerContext } from "../components/ComposerProvider";
 
 class ConnectAdvanced extends React.PureComponent {
   constructor(props, context) {
