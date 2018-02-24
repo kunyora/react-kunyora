@@ -175,6 +175,8 @@ Subscriber.prototype.getQueryFromStore = function(
     queryState = overall[operation];
 
   if (queryState) {
+    this.progressCount += 100;
+    progressCallback(this.progressCount / this.lengthOfArrayOfQueryConfig);
     return new Promise((resolve, reject) => resolve({ data: queryState }));
   } else {
     return this.getQueryAxiosInstance(operation, config, progressCallback);
