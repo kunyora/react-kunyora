@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import invariant from "invariant";
 
 import * as types from "../types";
-import Connect from "./Connect";
+import Connect from "../auxillary_components/Connect";
 import Subscriber from "../utils/subscriber";
 import * as asyncActions from "../async_actions";
 
