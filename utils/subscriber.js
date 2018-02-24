@@ -1,4 +1,5 @@
 import invariant from "invariant";
+import * as types from "../types";
 
 function Subscriber(store, client, shouldInitHandshake, loader) {
   this.store = store;
@@ -138,25 +139,62 @@ Subscriber.prototype.composeAxiosInstance = function(
   arrayOfQueryConfig,
   progressCallback
 ) {
+  this.lengthOfArrayOfQueryConfig = arrayOfQueryConfig.length;
   let reducedAxiosReduced = arrayOfQueryConfig.reduce(
-    (acc, { operation, config }) => {
-      let _config = config || {};
-      acc.push(
-        this.client[operation]({
-          ..._config,
-          onDownloadProgress: e => {
-            let requestProgress = e.loaded / e.total * 100;
-            this.progressCount += requestProgress;
-            let _percentCount = this.progressCount / arrayOfQueryConfig.length;
-            progressCallback(_percentCount || 0);
-          }
-        })
-      );
+    (acc, { operation, config, fetchPolicy }) => {
+      let _config = config || {},
+        _instance = null,
+        _fetchPolicy = fetchPolicy || "network-only";
+      if (_fetchPolicy === "cache-first") {
+        _instance = this.getQueryFromStore(
+          operation,
+          _config,
+          progressCallback
+        );
+      } else {
+        _instance = this.getQueryAxiosInstance(
+          operation,
+          _config,
+          progressCallback
+        );
+      }
+      acc.push(_instance);
       return acc;
     },
     []
   );
   return reducedAxiosReduced;
+};
+
+Subscriber.prototype.getQueryFromStore = function(
+  operation,
+  config,
+  progressCallback
+) {
+  let overall = this.store.getState()[types.SET_QUERY_DATA] || {},
+    queryState = overall[operation];
+
+  if (queryState) {
+    return new Promise((resolve, reject) => resolve({ data: queryState }));
+  } else {
+    return this.getQueryAxiosInstance(operation, config, progressCallback);
+  }
+};
+
+Subscriber.prototype.getQueryAxiosInstance = function(
+  operation,
+  config,
+  progressCallback
+) {
+  return this.client[operation]({
+    ...config,
+    onDownloadProgress: e => {
+      let requestProgress = e.loaded / e.total * 100;
+      this.progressCount += requestProgress;
+      let _percentCount = this.progressCount / this.lengthOfArrayOfQueryConfig;
+      progressCallback(_percentCount || 0);
+    }
+  });
 };
 
 Subscriber.prototype.sendResponseToCallback = function(response) {
