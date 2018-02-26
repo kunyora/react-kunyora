@@ -1,6 +1,12 @@
 import * as types from "../types";
 import invariant from "invariant";
 
+/**
+ * @param {String} name
+ * This function completes the progress count during a page transition
+ * using the requestAnimationFrame provided by the browser. However this functionality is just available for the browser environment for now
+ * support for mobile [React-Native] environment should be provided soon
+ */
 export const completeProgressCount = name => store => {
   try {
     let start = window.performance.now(),
