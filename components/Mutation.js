@@ -6,6 +6,10 @@ import Subscriber from "../utils/subscriber";
 import { ComposerContext } from "./ComposerProvider";
 import * as types from "../types";
 
+/**
+ * MutationAdvanced wraps the Mutation component and provides it with sets of methods
+ * that will allow it to perform mutations to an online data store
+ */
 class MutationAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
@@ -23,6 +27,7 @@ class MutationAdvanced extends React.PureComponent {
         "[config] property is required in props [options] and must be of type [object] for your Mutation component"
       );
     }
+    //operations must be of type CREATE | UPDATE | PARTUPDATE | DELETE
     invariant(
       operation.slice(0, 6).toUpperCase() === "CREATE" ||
         operation.slice(0, 6).toUpperCase() === "UPDATE" ||
@@ -60,6 +65,11 @@ class MutationAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {Array} refetchConfig
+   * This function refetches some sets of API request after a mutation has been made and
+   * automatically updates the store with the changes
+   */
   refetchQueries = refetchConfig => {
     let { store } = this.props;
 
@@ -80,6 +90,10 @@ class MutationAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {Object} passedConfig
+   * This function runs an mutation request and performs some refetch of queries if supplied
+   */
   mutate = passedConfig => {
     let { operation, options: { refetchQueries, config } } = this.props,
       _config = passedConfig || config || {};
@@ -105,6 +119,10 @@ class MutationAdvanced extends React.PureComponent {
 
 let Mutation = null;
 
+/**
+ * @param {Object} [{children: any, rest: Object}]
+ * This function exposes MutationAdvanced to the context api which provides it with the client instance and the store
+ */
 export default (Mutation = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
     {context => {
@@ -117,3 +135,17 @@ export default (Mutation = ({ children, ...rest }) => (
     }}
   </ComposerContext.Consumer>
 ));
+
+Mutation.propTypes = {
+  children: PropTypes.any,
+  operation: PropTypes.string.isRequired,
+  options: PropTypes.shape({
+    refetchQueries: PropTypes.arrayOf(
+      PropTypes.shape({
+        operation: PropTypes.string.isRequired,
+        config: PropTypes.object
+      })
+    ),
+    config: PropTypes.object
+  })
+};
