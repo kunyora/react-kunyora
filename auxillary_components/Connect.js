@@ -4,6 +4,10 @@ import _ from "lodash";
 
 import { ComposerContext } from "../components/ComposerProvider";
 
+/**
+ * ConnectAdvanced wraps all Queries, Router and Connector component of the application
+ * And provide them access to the store and automatically re-renders them when changes based on what they are listening for occurs
+ */
 class ConnectAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
@@ -19,9 +23,16 @@ class ConnectAdvanced extends React.PureComponent {
   };
 
   componentWillUnmount() {
+    //cleans up the listener method to the store
     this.unsubscribe();
   }
 
+  /**
+   * @return {Object} [{shouldSetState: boolean, nextState: Object}]
+   * This function checks the [state] status to see if it should be updated
+   * This is successfully done by carrying out a lodash deep comparism between the incoming store changes and the store changes
+   * to see if there infact any changes to the store
+   */
   updateState = () => {
     let { mapStateToProps, store: { getState, listen } } = this.props;
 
@@ -62,6 +73,11 @@ class ConnectAdvanced extends React.PureComponent {
 
 let Connect = null;
 
+/**
+ * @param {Object} [{children: any, rest: Object}]
+ * Connect is a stateless function which exposes the ConnectAdvanced component to the store and client instance
+ * using the new context api
+ */
 export default (Connect = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
     {context => {
