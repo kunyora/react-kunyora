@@ -6,6 +6,10 @@ import Connect from "../auxillary_components/Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 
+/**
+ * QueryAdvanced wraps the Query component and provides it with sets of methods
+ * that will allow a particular query perform a particuar query task
+ */
 class QueryAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
@@ -105,6 +109,11 @@ class QueryAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {any} data
+   * This function sets the state of the Query component after the thenable method has been called
+   * or the API function has resolved
+   */
   setSuccessDataState = data => {
     let initialDataSettings = { isInitialDataSet: true },
       { operation, store } = this.props,
@@ -123,6 +132,10 @@ class QueryAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {any} error
+   * This function sets the state of the Query component after the API method has rejected with an error from fetching the data
+   */
   setErrorDataState = error => {
     let { operation } = this.props;
     this.setState({
@@ -134,6 +147,10 @@ class QueryAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {Object} passedConfig
+   * The refetchQuery function is called to refetch a particular query from the Restful API
+   */
   refetchQuery = passedConfig => {
     let { skip, operation, options } = this.props,
       _options = options || {},
@@ -151,6 +168,12 @@ class QueryAdvanced extends React.PureComponent {
     }
   };
 
+  /**
+   * @param {Object} fetchMoreOptions
+   * This function accepts a single Object parameter [fetchMoreOptions] which it uses to update the store
+   * when more of the requested data has been loaded
+   * This method is useful for paginating your queries
+   */
   fetchMore = fetchMoreOptions => {
     let { skip, operation, options, store } = this.props,
       _options = options || {},
@@ -191,6 +214,10 @@ class QueryAdvanced extends React.PureComponent {
   }
 }
 
+/**
+ * @return {Object}
+ * @param {Object} state
+ */
 function mapStateToProps(state) {
   return {
     queries: state[types.SET_QUERY_DATA]
@@ -199,6 +226,12 @@ function mapStateToProps(state) {
 
 let Query = null;
 
+/**
+ * @param {Object} [{children: any, rest: Object}]
+ * This function exposes the QueryAdvanced component to store changes or updates
+ * The [mapStateToProps] function acts as a binding between the Connect API and the Query component
+ * It tells Connect what tree of the state object should be sent down to Connect as props
+ */
 export default (Query = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
