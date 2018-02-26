@@ -90,3 +90,7 @@ export default (Connect = ({ children, ...rest }) => (
     }}
   </ComposerContext.Consumer>
 ));
+
+Connect.propTypes = {
+  children: PropTypes.any
+};

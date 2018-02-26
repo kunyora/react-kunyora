@@ -246,3 +246,18 @@ export default (Query = ({ children, ...rest }) => (
     }}
   </Connect>
 ));
+
+Query.propTypes = {
+  children: PropTypes.any,
+  operation: PropTypes.string.isRequired,
+  skip: PropTypes.bool,
+  options: PropTypes.shape({
+    config: PropTypes.object,
+    fetchPolicy: PropTypes.oneOf([
+      "cache-first",
+      "network-only",
+      "cache-only",
+      "cache-and-network"
+    ])
+  })
+};
