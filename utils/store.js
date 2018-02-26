@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 let Store = null;
 
 export default (Store = {
@@ -36,6 +38,6 @@ export default (Store = {
   },
 
   getState: function() {
-    return Store.state;
+    return _.cloneDeep(Store.state);
   }
 });
