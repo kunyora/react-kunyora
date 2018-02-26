@@ -66,9 +66,10 @@ class MutationAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {Array} refetchConfig
    * This function refetches some sets of API request after a mutation has been made and
    * automatically updates the store with the changes
+   *
+   * @param {Array} refetchConfig
    */
   refetchQueries = refetchConfig => {
     let { store } = this.props;
@@ -91,8 +92,9 @@ class MutationAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {Object} passedConfig
    * This function runs an mutation request and performs some refetch of queries if supplied
+   *
+   * @param {Object} passedConfig
    */
   mutate = passedConfig => {
     let { operation, options: { refetchQueries, config } } = this.props,
@@ -120,8 +122,9 @@ class MutationAdvanced extends React.PureComponent {
 let Mutation = null;
 
 /**
- * @param {Object} [{children: any, rest: Object}]
  * This function exposes MutationAdvanced to the context api which provides it with the client instance and the store
+ *
+ * @param {Object} [{children: any, rest: Object}]
  */
 export default (Mutation = ({ children, ...rest }) => (
   <ComposerContext.Consumer>

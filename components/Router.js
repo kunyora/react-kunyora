@@ -66,8 +66,9 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {any} error
    * This function sets the state after a rejection must have been thrown by the application
+   *
+   * @param {any} error
    */
   setErrorDataState = error => {
     let { name } = this.props;
@@ -80,9 +81,10 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {Array} datas
    * This function sets the state of the application after a resolve has been achieved
    * This is only called if the queries from the endpoint and the component have all been pre downloaded
+   *
+   * @param {Array} datas
    */
   setSuccessDataState = datas => {
     let { resources, store, onRequestRoute } = this.props;
@@ -136,8 +138,9 @@ function mapStateToProps(state) {
 let Router = null;
 
 /**
- * @param {Object} [{children: any, rest: Object}]
  * Router is a simple component that has with routing , not by itself, but instead uses the RouterAdvanced component to achieve this functionality
+ * 
+ * @param {Object} [{children: any, rest: Object}]
  */
 export default (Router = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>

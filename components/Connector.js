@@ -178,12 +178,13 @@ function mapStateToProps(state) {
 let Connector = null;
 
 /**
- * @param {Object} [{children: any, rest: Object}]
  * The Connector Component exposes the ConnectorAdvanced component to store changes or updates
  * This component can also be used as a render props or a regular component depending on if the loader props was supplied
  *
  * The component also makes a copy of the Loading component or error component and renders the component which has been requested on demand based on the 3 render states
  * Generally, this component hardly does anything by itself and relies heavily on the ConnectorAdvanced component to carry all its heavy duties
+ *
+ * @param {Object} [{children: any, rest: Object}]
  */
 export default (Connector = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>

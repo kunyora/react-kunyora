@@ -110,9 +110,10 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {any} data
    * This function sets the state of the Query component after the thenable method has been called
    * or the API function has resolved
+   *
+   * @param {any} data
    */
   setSuccessDataState = data => {
     let initialDataSettings = { isInitialDataSet: true },
@@ -133,8 +134,9 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {any} error
    * This function sets the state of the Query component after the API method has rejected with an error from fetching the data
+   *
+   * @param {any} error
    */
   setErrorDataState = error => {
     let { operation } = this.props;
@@ -148,8 +150,9 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {Object} passedConfig
    * The refetchQuery function is called to refetch a particular query from the Restful API
+   *
+   * @param {Object} passedConfig
    */
   refetchQuery = passedConfig => {
     let { skip, operation, options } = this.props,
@@ -169,10 +172,11 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * @param {Object} fetchMoreOptions
    * This function accepts a single Object parameter [fetchMoreOptions] which it uses to update the store
    * when more of the requested data has been loaded
    * This method is useful for paginating your queries
+   *
+   * @param {Object} fetchMoreOptions
    */
   fetchMore = fetchMoreOptions => {
     let { skip, operation, options, store } = this.props,

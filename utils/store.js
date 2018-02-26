@@ -15,10 +15,11 @@ export default (Store = {
   callbacks: [],
 
   /**
-   * @return {Function}
-   * @param {Function} callback
    * This function takes a single callback function which it calls everytime there is a change to the store
    * It returns a function which it uses to unsubscribe the callback function from listening to store changes
+   *
+   * @return {Function}
+   * @param {Function} callback
    */
   listen: function(callback) {
     Store.callbacks.push(callback);
@@ -30,8 +31,9 @@ export default (Store = {
   },
 
   /**
-   * @param {Function} func
    * This function accepts a callback function which it runs in an asynchronous manner
+   *
+   * @param {Function} func
    */
   performAsyncAction: function(func) {
     function runAsync() {
@@ -41,10 +43,11 @@ export default (Store = {
   },
 
   /**
-   * @param {String} action
-   * @param {any} args
    * This function dispatches and sets the state to a new value
    * Afterwhich it calls a function which runs the listening callback methods
+   *
+   * @param {String} action
+   * @param {any} args
    */
   dispatch: function(action, args) {
     Store.state = {
@@ -64,8 +67,9 @@ export default (Store = {
   },
 
   /**
-   * @return {Object}
    * This functin returns a deep copy of the state to the caller method or function
+   *
+   * @return {Object}
    */
   getState: function() {
     return _.cloneDeep(Store.state);

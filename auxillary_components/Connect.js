@@ -28,10 +28,11 @@ class ConnectAdvanced extends React.PureComponent {
   }
 
   /**
-   * @return {Object} [{shouldSetState: boolean, nextState: Object}]
    * This function checks the [state] status to see if it should be updated
    * This is successfully done by carrying out a lodash deep comparism between the incoming store changes and the store changes
    * to see if there infact any changes to the store
+   *
+   * @return {Object} [{shouldSetState: boolean, nextState: Object}]
    */
   updateState = () => {
     let { mapStateToProps, store: { getState, listen } } = this.props;
@@ -74,9 +75,10 @@ class ConnectAdvanced extends React.PureComponent {
 let Connect = null;
 
 /**
- * @param {Object} [{children: any, rest: Object}]
  * Connect is a stateless function which exposes the ConnectAdvanced component to the store and client instance
  * using the new context api
+ *
+ * @param {Object} [{children: any, rest: Object}]
  */
 export default (Connect = ({ children, ...rest }) => (
   <ComposerContext.Consumer>
