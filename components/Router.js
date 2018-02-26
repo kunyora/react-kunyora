@@ -7,6 +7,18 @@ import Connect from "../auxillary_components/Connect";
 import Subscriber from "../utils/subscriber";
 import * as asyncActions from "../async_actions";
 
+/**
+ * RouterAdvanced component is an advanced component that provides Router functionality to the application
+ * This component carries all the heavy logic of sending simultaneous API request and also simultaneously loading the pre-loading the next view
+ *
+ * It does this by providing some sets of declarative API's to update the progress count state of the store and
+ * it also provides some little set of imperative API's that helps in routing teh current view to the next view based on the routing engine currently being used
+ *
+ * Currently, This component provides the functionality of sending all the API request a once to the server together with making the request for the component
+ * but in future versions , we intend to provide functionalities that would allow our users make custom demands to load a specified number of API request before route
+ *
+ * Please see the [TODO] section of the application for functionalities we wish to build into our application that you could help add
+ */
 class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
@@ -53,6 +65,10 @@ class RouterAdvanced extends React.PureComponent {
     progress: PropTypes.any
   };
 
+  /**
+   * @param {any} error
+   * This function sets the state after a rejection must have been thrown by the application
+   */
   setErrorDataState = error => {
     let { name } = this.props;
     this.setState({
@@ -63,6 +79,11 @@ class RouterAdvanced extends React.PureComponent {
     });
   };
 
+  /**
+   * @param {Array} datas
+   * This function sets the state of the application after a resolve has been achieved
+   * This is only called if the queries from the endpoint and the component have all been pre downloaded
+   */
   setSuccessDataState = datas => {
     let { resources, store, onRequestRoute } = this.props;
 
@@ -77,11 +98,14 @@ class RouterAdvanced extends React.PureComponent {
     onRequestRoute();
   };
 
+  //This function sends an async call to complete the progress count of the application
   completeProgressCount = () => {
     let { name, store } = this.props;
     store.performAsyncAction(asyncActions.completeProgressCount(name));
   };
 
+  //This function triggers a download of all the necessary resources needed to send the application
+  //to the next view and imperatively sends the application to the next view after the data has been gotten
   push = () => {
     let { resources, name } = this.props;
     this.subscriber
@@ -111,6 +135,10 @@ function mapStateToProps(state) {
 
 let Router = null;
 
+/**
+ * @param {Object} [{children: any, rest: Object}]
+ * Router is a simple component that has with routing , not by itself, but instead uses the RouterAdvanced component to achieve this functionality
+ */
 export default (Router = ({ children, ...rest }) => (
   <Connect mapStateToProps={mapStateToProps}>
     {(props, context) => {
@@ -125,3 +153,17 @@ export default (Router = ({ children, ...rest }) => (
     }}
   </Connect>
 ));
+
+Router.propTypes = {
+  children: PropTypes.any,
+  name: PropTypes.string.isRequired,
+  loader: PropTypes.func,
+  resources: PropTypes.arrayOf(
+    PropTypes.shape({
+      operation: PropTypes.string.isRequired,
+      config: PropTypes.object,
+      fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
+    })
+  ).isRequired,
+  onRequestRoute: PropTypes.func.isRequired
+};
