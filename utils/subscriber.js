@@ -11,10 +11,11 @@ import _ from "lodash";
  * [store] is an instance of a copied version of the store
  * [client] is an instance of composer client
  * [shouldInitHandshake] is a boolean value that tells the subscriber that a request is about to be made from a view to another
- * [loader] is a function that contains the import to the view to be pre-loaded or downloaded
+ * [loader] is a function that contains the dynamic import to the view to be pre-loaded or downloaded
  *
  * [N:B] - Requests are handled by axios and an higher level instance must have been created and passed to the ComposerProvider higher level component as a props
  * Since this instance would be exposed as a context throughout the lifdecycle of the application
+ *
  *
  *
  * @param {any} store
