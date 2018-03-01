@@ -22,7 +22,7 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
-    "composer-client": "https://github.com/gbenga504/composer-client.git",
+    "composer-client": "https://github.com/kayslay/composer-client.git",
     "create-react-context": "^0.1.6",
     "immutable": "^3.8.2",
     "invariant": "^2.2.2",
