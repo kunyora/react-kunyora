@@ -24,5 +24,6 @@ module.exports = {
     libraryTarget: "commonjs2"
   },
   target: "node",
+  externals: nodeModules,
   devtool: "source-map"
 };
