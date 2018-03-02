@@ -1,8 +1,11 @@
+import ComposerClient from "composer-client";
+
 import Subsciber from "../utils/subscriber";
 import client from "../__customMockData__/client.mock";
-import store from "../utils/store";
 
-let subscriber = new Subsciber(store, client),
+const Client = ComposerClient({});
+
+let subscriber = new Subsciber(Client.store, client),
   configs = [{ operation: "getUsers" }, { operation: "getPosts" }];
 
 describe("API query and mutation request", () => {
