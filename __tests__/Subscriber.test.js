@@ -2,7 +2,8 @@ import Subsciber from "../utils/subscriber";
 import client from "../__customMockData__/client.mock";
 import store from "../utils/store";
 
-let subscriber = new Subsciber(store, client);
+let subscriber = new Subsciber(store, client),
+  configs = [{ operation: "getUsers" }, { operation: "getPosts" }];
 
 describe("API query and mutation request", () => {
   test("subscribeToQuery should be an instance of promise", () => {
@@ -34,11 +35,33 @@ describe("API query and mutation request", () => {
   });
 
   test("sendMultipleConcurrentQueries should return an array of users and posts", () => {
-    let configs = [{ operation: "getUsers" }, { operation: "getPosts" }];
     return subscriber
       .sendMultipleConcurrentQueries(undefined, configs)
       .then(data => {
         expect(data).toHaveLength(2);
       });
   });
+});
+
+test("buildRequestHandshakePromise should return a Promise", () => {
+  expect(subscriber.buildRequestHandshakePromise(configs)).toBeInstanceOf(
+    Promise
+  );
+});
+
+test("composeAxiosInstance should return an array of Promise of length 2 and each item be an instance of Promise", () => {
+  expect(subscriber.composeAxiosInstance(configs)).toHaveLength(2);
+  expect(subscriber.composeAxiosInstance(configs)[0]).toBeInstanceOf(Promise);
+});
+
+test("getQueryFromStore should return a Promise", () => {
+  expect(subscriber.getQueryFromStore("getUsers")).toBeInstanceOf(Promise);
+});
+
+test("getQueryAxiosInstance should return a Promise", () => {
+  expect(subscriber.getQueryAxiosInstance("getUsers")).toBeInstanceOf(Promise);
+});
+
+test("sendResponseToCallback should be defined", () => {
+  expect(subscriber.sendResponseToCallback).toBeDefined();
 });

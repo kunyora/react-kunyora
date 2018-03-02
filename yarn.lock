@@ -1235,9 +1235,9 @@ commondir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
 
-"composer-client@https://github.com/gbenga504/composer-client.git":
+"composer-client@https://github.com/kayslay/composer-client.git":
   version "1.0.0"
-  resolved "https://github.com/gbenga504/composer-client.git#148d795d4f8d77748aa4c919867f2450e2b89c15"
+  resolved "https://github.com/kayslay/composer-client.git#4fd4efa959386665083628fe74e97d819f64daff"
   dependencies:
     axios "^0.17.1"
     camelcase "^4.1.0"
