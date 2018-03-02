@@ -1237,7 +1237,7 @@ commondir@^1.0.1:
 
 "composer-client@https://github.com/kayslay/composer-client.git":
   version "1.0.0"
-  resolved "https://github.com/kayslay/composer-client.git#4fd4efa959386665083628fe74e97d819f64daff"
+  resolved "https://github.com/kayslay/composer-client.git#62b9a771ed7cb8f2ba3574879b92e0620555c2da"
   dependencies:
     axios "^0.17.1"
     camelcase "^4.1.0"
