@@ -16,7 +16,7 @@ class MutationAdvanced extends React.PureComponent {
     let { operation, options, store, client } = props;
     invariant(
       typeof operation === "string",
-      "Props [operation] must be passed to component Queries and it must be of type [string]"
+      "Props [operation] must be passed to component Mutation and it must be of type [string]"
     );
     if (options && options.config) {
       invariant(
