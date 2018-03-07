@@ -97,14 +97,22 @@ class MutationAdvanced extends React.PureComponent {
    * @param {Object} passedConfig
    */
   mutate = passedConfig => {
-    let { operation, options: { refetchQueries, config } } = this.props,
-      _config = passedConfig || config || {};
+    let { operation, options } = this.props,
+      _options = options || {},
+      _refetchQueries = _options.refetchQueries,
+      _initConfig = _options.config || {},
+      _config = null;
+
+    if (passedConfig) _config = { ..._initConfig, ...passedConfig };
+    else if (_initConfig) _config = _initConfig;
+    else _config = {};
+
     this.setLoadingDataState();
     return this.subscriber
       .subscribeToMutation(operation, _config)
       .then(response => {
         this.setLoadingDataState();
-        if (refetchQueries) this.refetchQueries(refetchQueries);
+        if (_refetchQueries) this.refetchQueries(_refetchQueries);
         return Promise.resolve(response.data);
       })
       .catch(error => {
