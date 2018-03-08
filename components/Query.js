@@ -157,7 +157,13 @@ class QueryAdvanced extends React.PureComponent {
   refetchQuery = passedConfig => {
     let { skip, operation, options } = this.props,
       _options = options || {},
-      _config = passedConfig || _options.config || {};
+      _initConfig = _options.config || {},
+      _config = null;
+
+    if (passedConfig) _config = { ..._initConfig, ...passedConfig };
+    else if (_initConfig) _config = _initConfig;
+    else _config = {};
+
     if (!skip) {
       this.setLoadingDataState();
       this.subscriber
