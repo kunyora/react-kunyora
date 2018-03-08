@@ -49,6 +49,8 @@ class QueryAdvanced extends React.PureComponent {
         "cache-and-network"
       ])
     }),
+    renderError: PropTypes.element,
+    renderLoading: PropTypes.element,
     client: PropTypes.any,
     store: PropTypes.any
   };
@@ -215,12 +217,23 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { operation } = this.props;
-    return this.props.children(
-      this.state[operation],
-      this.fetchMore,
-      this.refetchQuery
-    );
+    let {
+      operation,
+      operation: { loading, error },
+      renderLoading,
+      renderError
+    } = this.props;
+    if (loading && renderLoading) {
+      return renderLoading;
+    } else if (error && renderError) {
+      return renderError;
+    } else {
+      return this.props.children(
+        this.state[operation],
+        this.fetchMore,
+        this.refetchQuery
+      );
+    }
   }
 }
 
