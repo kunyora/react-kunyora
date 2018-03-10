@@ -4,7 +4,10 @@
   "description": "",
   "main": "dist/react-composer.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "build": "webpack",
+    "test": "jest",
+    "watch:build": "webpack -w",
+    "watch:test": "jest --watchAll"
   },
   "keywords": [],
   "author": "Anifowoshe Gbenga David <daveanifowoshe@ymail.com>",
