@@ -160,10 +160,12 @@ class ConnectorAdvanced extends React.PureComponent {
             : typeof component === "function" ? component() : component;
         return children({}, true, _component, true);
       } else {
-        let _props = composableProps
-          ? { ...composableProps, progressCount: _progressCount }
-          : { progressCount: _progressCount };
-        return children(_props, true, component, false);
+        return children(
+          { progressCount: _progressCount },
+          true,
+          component,
+          false
+        );
       }
     }
   }
@@ -193,13 +195,13 @@ export default (Connector = ({ children, ...rest }) => (
       return (
         <ConnectorAdvanced {...composedProps}>
           {(passedProps, isCodeSplitted, Component, useCloneElement) => {
-            let _component = !isCodeSplitted ? (
-              children(passedProps)
-            ) : !useCloneElement ? (
-              <Component {...passedProps} />
-            ) : Component !== null ? (
-              React.cloneElement(Component, passedProps)
-            ) : null;
+            let _component = !isCodeSplitted
+              ? children(passedProps)
+              : !useCloneElement
+                ? children(component, passedProps)
+                : Component !== null
+                  ? React.cloneElement(Component, passedProps)
+                  : null;
             return _component;
           }}
         </ConnectorAdvanced>
