@@ -32,7 +32,7 @@ class QueryAdvanced extends React.PureComponent {
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
     this.state = {
-      [operation]: { isInitialDataSet: false, loading: false }
+      [operation]: { ...this.beforeFirstRenderCall() }
     };
     this.subscriber = new Subscriber(store, client);
   }
@@ -55,13 +55,15 @@ class QueryAdvanced extends React.PureComponent {
     store: PropTypes.any
   };
 
-  componentDidMount() {
+  beforeFirstRenderCall = () => {
     let { options, queries, operation } = this.props,
       _options = options || {},
       _fetchPolicy = _options.fetchPolicy || "cache-first",
-      _queries = queries || {};
+      _queries = queries || {},
+      _state = {};
     switch (_fetchPolicy) {
       case "network-only":
+        _state = { ..._state, loading: true, isInitialDataSet: false };
         this.refetchQuery(undefined);
         break;
       case "cache-only":
@@ -69,36 +71,41 @@ class QueryAdvanced extends React.PureComponent {
           _queries[operation],
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
-        this.setInitialStateFromStoreAfterMount();
+        _state = {
+          ..._state,
+          ...this.setInitialStateFromStoreAfterMount()
+        };
         break;
       case "cache-and-network":
         invariant(
           _queries[operation],
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
-        this.setInitialStateFromStoreAfterMount();
+        _state = {
+          ..._state,
+          ...this.setInitialStateFromStoreAfterMount()
+        };
         this.refetchQuery(undefined);
         break;
       default:
         if (_queries[operation]) {
-          this.setInitialStateFromStoreAfterMount();
+          _state = { ..._state, ...this.setInitialStateFromStoreAfterMount() };
         } else {
+          _state = { ..._state, loading: true, isInitialDataSet: false };
           this.refetchQuery(undefined);
         }
         break;
     }
-  }
+    return _state;
+  };
 
   setInitialStateFromStoreAfterMount = () => {
     let { operation, queries } = this.props;
-    this.setState({
-      [operation]: {
-        ...this.state[operation],
-        loading: false,
-        isInitialDataSet: queries[operation] ? true : false,
-        data: queries[operation]
-      }
-    });
+    return {
+      loading: false,
+      isInitialDataSet: queries[operation] ? true : false,
+      data: queries[operation]
+    };
   };
 
   setLoadingDataState = () => {
