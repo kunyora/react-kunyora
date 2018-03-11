@@ -93,7 +93,6 @@ class ConnectorAdvanced extends React.PureComponent {
     progress: PropTypes.any,
     loadingComponent: PropTypes.oneOfType([PropTypes.func, PropTypes.element]),
     errorComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
-    composableProps: PropTypes.any,
     delay: PropTypes.number,
     timeout: PropTypes.number
   };
@@ -144,7 +143,7 @@ class ConnectorAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { name, progress, children, loader, composableProps } = this.props,
+    let { name, progress, children, loader } = this.props,
       { component, renderState } = this.state,
       _progress = progress || {},
       _progressCount = _progress[name] || 0;
@@ -216,7 +215,6 @@ Connector.propTypes = {
   loader: PropTypes.func,
   loadingComponent: PropTypes.oneOfType([PropTypes.func, PropTypes.element]),
   errorComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
-  composableProps: PropTypes.any,
   delay: PropTypes.number,
   timeout: PropTypes.number
 };
