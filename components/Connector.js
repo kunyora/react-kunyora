@@ -197,7 +197,7 @@ export default (Connector = ({ children, ...rest }) => (
             let _component = !isCodeSplitted
               ? children(passedProps)
               : !useCloneElement
-                ? children(component, passedProps)
+                ? children(Component, passedProps)
                 : Component !== null
                   ? React.cloneElement(Component, passedProps)
                   : null;
