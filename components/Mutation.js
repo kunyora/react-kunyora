@@ -47,6 +47,7 @@ class MutationAdvanced extends React.PureComponent {
       refetchQueries: PropTypes.arrayOf(
         PropTypes.shape({
           operation: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
           config: PropTypes.object
         })
       ),
@@ -74,12 +75,12 @@ class MutationAdvanced extends React.PureComponent {
   refetchQueries = refetchConfig => {
     let { store } = this.props;
 
-    refetchConfig.forEach(({ operation, config }) => {
+    refetchConfig.forEach(({ operation, name, config }) => {
       this.subscriber
         .subscribeToQuery(operation, config || {})
         .then(response => {
           let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-            _newState = { ...overallState, [operation]: response.data };
+            _newState = { ...overallState, [name]: response.data };
 
           store.dispatch(types.SET_QUERY_DATA, _newState);
         })
@@ -154,6 +155,7 @@ Mutation.propTypes = {
     refetchQueries: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         config: PropTypes.object
       })
     ),

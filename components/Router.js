@@ -55,6 +55,7 @@ class RouterAdvanced extends React.PureComponent {
     resources: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         config: PropTypes.object,
         fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
       })
@@ -89,9 +90,9 @@ class RouterAdvanced extends React.PureComponent {
   setSuccessDataState = datas => {
     let { resources, store, onRequestRoute } = this.props;
 
-    resources.forEach(({ operation }, i) => {
+    resources.forEach(({ name }, i) => {
       let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-        _newState = { ...overallState, [operation]: datas[i].data };
+        _newState = { ...overallState, [name]: datas[i].data };
       store.dispatch(types.SET_QUERY_DATA, _newState);
     });
 
@@ -139,7 +140,7 @@ let Router = null;
 
 /**
  * Router is a simple component that has with routing , not by itself, but instead uses the RouterAdvanced component to achieve this functionality
- * 
+ *
  * @param {Object} [{children: any, rest: Object}]
  */
 export default (Router = ({ children, ...rest }) => (
@@ -165,6 +166,7 @@ Router.propTypes = {
     PropTypes.shape({
       operation: PropTypes.string.isRequired,
       config: PropTypes.object,
+      name: PropTypes.string.isRequired,
       fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
     })
   ).isRequired,

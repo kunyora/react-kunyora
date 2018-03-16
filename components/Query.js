@@ -13,7 +13,7 @@ import Subscriber from "../utils/subscriber";
 class QueryAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { operation, options, queries, store, client } = props;
+    let { operation, options, queries, store, client, name } = props;
     invariant(
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
@@ -31,6 +31,7 @@ class QueryAdvanced extends React.PureComponent {
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
+    invariant(name, "The [name] props must be supplied to Query component");
     this.subscriber = new Subscriber(store, client);
     this.beforeFirstRenderCall();
   }
@@ -38,6 +39,7 @@ class QueryAdvanced extends React.PureComponent {
   static propTypes = {
     operation: PropTypes.string.isRequired,
     skip: PropTypes.bool,
+    name: PropTypes.string.isRequired,
     options: PropTypes.shape({
       config: PropTypes.object,
       fetchPolicy: PropTypes.oneOf([
@@ -121,7 +123,7 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * getInitialStateFromStore gets the initial state of the component 
+   * getInitialStateFromStore gets the initial state of the component
    * from the cache or the store
    */
   getInitialStateFromStore = () => {
@@ -134,12 +136,12 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   /**
-   * setLoadingState sets the loading state of the component 
-   * While doing this, it needs to make sure that the state of the component is not set 
-   * if the component has not been mounted yet 
-   * 
-   * this._state = 1 , so that the component's state could always be set on subsequent 
-   * setLoadingDataState calls 
+   * setLoadingState sets the loading state of the component
+   * While doing this, it needs to make sure that the state of the component is not set
+   * if the component has not been mounted yet
+   *
+   * this._state = 1 , so that the component's state could always be set on subsequent
+   * setLoadingDataState calls
    */
   setLoadingDataState = () => {
     let { operation } = this.props,
@@ -165,9 +167,9 @@ class QueryAdvanced extends React.PureComponent {
    */
   setSuccessDataState = data => {
     let initialDataSettings = { isInitialDataSet: true },
-      { operation, store } = this.props,
+      { operation, name, store } = this.props,
       overallState = store.getState()[types.SET_QUERY_DATA] || {},
-      _newState = { ...overallState, [operation]: data };
+      _newState = { ...overallState, [name]: data };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
     this.setState({
@@ -319,6 +321,7 @@ export default (Query = ({ children, ...rest }) => (
 Query.propTypes = {
   children: PropTypes.any,
   operation: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   skip: PropTypes.bool,
   options: PropTypes.shape({
     config: PropTypes.object,
