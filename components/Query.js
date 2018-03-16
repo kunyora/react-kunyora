@@ -31,10 +31,8 @@ class QueryAdvanced extends React.PureComponent {
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
-    this.state = {
-      [operation]: { ...this.beforeFirstRenderCall() }
-    };
     this.subscriber = new Subscriber(store, client);
+    this.beforeFirstRenderCall();
   }
 
   static propTypes = {
@@ -55,6 +53,21 @@ class QueryAdvanced extends React.PureComponent {
     store: PropTypes.any
   };
 
+  setInitialStateBeforeMount = (operation, arg) => {
+    this.state = {
+      [operation]: { ...arg }
+    };
+  };
+
+  /**
+   * beforeFirstRenderCall executes before render method is called
+   * This function helps to perform som eoperations based on the fetchPolicy passed to the Query component
+   *
+   *
+   * The instance method this._state is set to null here so that we
+   * could prevent the component from setting the state of this component
+   * which has not been mounted yet
+   */
   beforeFirstRenderCall = () => {
     let { options, queries, operation } = this.props,
       _options = options || {},
@@ -64,6 +77,8 @@ class QueryAdvanced extends React.PureComponent {
     switch (_fetchPolicy) {
       case "network-only":
         _state = { ..._state, loading: true, isInitialDataSet: false };
+        this.setInitialStateBeforeMount(operation, _state);
+        this._state = null;
         this.refetchQuery(undefined);
         break;
       case "cache-only":
@@ -73,8 +88,9 @@ class QueryAdvanced extends React.PureComponent {
         );
         _state = {
           ..._state,
-          ...this.setInitialStateFromStoreAfterMount()
+          ...this.getInitialStateFromStore()
         };
+        this.setInitialStateBeforeMount(operation, _state);
         break;
       case "cache-and-network":
         invariant(
@@ -83,15 +99,20 @@ class QueryAdvanced extends React.PureComponent {
         );
         _state = {
           ..._state,
-          ...this.setInitialStateFromStoreAfterMount()
+          ...this.getInitialStateFromStore()
         };
+        this.setInitialStateBeforeMount(operation, _state);
+        this._state = null;
         this.refetchQuery(undefined);
         break;
       default:
         if (_queries[operation]) {
-          _state = { ..._state, ...this.setInitialStateFromStoreAfterMount() };
+          _state = { ..._state, ...this.getInitialStateFromStore() };
+          this.setInitialStateBeforeMount(operation, _state);
         } else {
           _state = { ..._state, loading: true, isInitialDataSet: false };
+          this.setInitialStateBeforeMount(operation, _state);
+          this._state = null;
           this.refetchQuery(undefined);
         }
         break;
@@ -99,7 +120,11 @@ class QueryAdvanced extends React.PureComponent {
     return _state;
   };
 
-  setInitialStateFromStoreAfterMount = () => {
+  /**
+   * getInitialStateFromStore gets the initial state of the component 
+   * from the cache or the store
+   */
+  getInitialStateFromStore = () => {
     let { operation, queries } = this.props;
     return {
       loading: false,
@@ -108,14 +133,28 @@ class QueryAdvanced extends React.PureComponent {
     };
   };
 
+  /**
+   * setLoadingState sets the loading state of the component 
+   * While doing this, it needs to make sure that the state of the component is not set 
+   * if the component has not been mounted yet 
+   * 
+   * this._state = 1 , so that the component's state could always be set on subsequent 
+   * setLoadingDataState calls 
+   */
   setLoadingDataState = () => {
-    let { operation } = this.props;
-    this.setState({
-      [operation]: {
-        ...this.state[operation],
-        loading: true
-      }
-    });
+    let { operation } = this.props,
+      _previousState = (this.state && this.state[operation]) || this._state;
+
+    if (this._state) {
+      this.setState({
+        [operation]: {
+          ..._previousState,
+          loading: true
+        }
+      });
+    } else {
+      this._state = 1;
+    }
   };
 
   /**
