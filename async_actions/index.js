@@ -25,11 +25,11 @@ export const completeProgressCount = name => store => {
           _movement = 0;
         } else if (movement <= 0.5) _movement = 50;
         else _movement = movement * 100;
-
         store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
           ...overallState,
           [name]: _movement
         });
+
         if (movement >= 1) animation = null;
         else requestAnimationFrame(animate);
       });
