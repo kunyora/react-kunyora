@@ -6,6 +6,7 @@ import * as types from "../types";
 import Connect from "../auxillary_components/Connect";
 import Subscriber from "../utils/subscriber";
 import * as asyncActions from "../async_actions";
+import { createSignatureHash } from "../utils/auxillaries";
 
 /**
  * RouterAdvanced component is an advanced component that provides Router functionality to the application
@@ -55,7 +56,6 @@ class RouterAdvanced extends React.PureComponent {
     resources: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
         config: PropTypes.object,
         fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
       })
@@ -90,10 +90,16 @@ class RouterAdvanced extends React.PureComponent {
   setSuccessDataState = datas => {
     let { resources, store, onRequestRoute } = this.props;
 
-    resources.forEach(({ name }, i) => {
-      let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-        _newState = { ...overallState, [name]: datas[i].data };
-      store.dispatch(types.SET_QUERY_DATA, _newState);
+    resources.forEach(({ operation, config }, i) => {
+      config = config || {};
+      ((operation, config) => {
+        let overallState = store.getState()[types.SET_QUERY_DATA] || {},
+          _newState = {
+            ...overallState,
+            [createSignatureHash(operation, config)]: datas[i].data
+          };
+        store.dispatch(types.SET_QUERY_DATA, _newState);
+      })(operation, config);
     });
 
     this.completeProgressCount();
@@ -166,7 +172,6 @@ Router.propTypes = {
     PropTypes.shape({
       operation: PropTypes.string.isRequired,
       config: PropTypes.object,
-      name: PropTypes.string.isRequired,
       fetchPolicy: PropTypes.oneOf(["cache-first", "network-only"])
     })
   ).isRequired,

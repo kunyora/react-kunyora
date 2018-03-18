@@ -5,6 +5,7 @@ import invariant from "invariant";
 import Subscriber from "../utils/subscriber";
 import { ComposerContext } from "./ComposerProvider";
 import * as types from "../types";
+import { createSignatureHash } from "../utils/auxillaries";
 
 /**
  * MutationAdvanced wraps the Mutation component and provides it with sets of methods
@@ -47,7 +48,6 @@ class MutationAdvanced extends React.PureComponent {
       refetchQueries: PropTypes.arrayOf(
         PropTypes.shape({
           operation: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
           config: PropTypes.object
         })
       ),
@@ -75,20 +75,26 @@ class MutationAdvanced extends React.PureComponent {
   refetchQueries = refetchConfig => {
     let { store } = this.props;
 
-    refetchConfig.forEach(({ operation, name, config }) => {
-      this.subscriber
-        .subscribeToQuery(operation, config || {})
-        .then(response => {
-          let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-            _newState = { ...overallState, [name]: response.data };
+    refetchConfig.forEach(({ operation, config }) => {
+      config = config || {};
+      ((operation, config) => {
+        this.subscriber
+          .subscribeToQuery(operation, config || {})
+          .then(response => {
+            let overallState = store.getState()[types.SET_QUERY_DATA] || {},
+              _newState = {
+                ...overallState,
+                [createSignatureHash(operation, config)]: response.data
+              };
 
-          store.dispatch(types.SET_QUERY_DATA, _newState);
-        })
-        .catch(error => {
-          if (process.env.NODE_ENV !== "production") {
-            console.log(error);
-          }
-        });
+            store.dispatch(types.SET_QUERY_DATA, _newState);
+          })
+          .catch(error => {
+            if (process.env.NODE_ENV !== "production") {
+              console.log(error);
+            }
+          });
+      })(operation, config);
     });
   };
 
@@ -155,7 +161,6 @@ Mutation.propTypes = {
     refetchQueries: PropTypes.arrayOf(
       PropTypes.shape({
         operation: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
         config: PropTypes.object
       })
     ),

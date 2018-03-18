@@ -5,6 +5,7 @@ import invariant from "invariant";
 import Connect from "../auxillary_components/Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
+import { createSignatureHash } from "../utils/auxillaries";
 
 /**
  * QueryAdvanced wraps the Query component and provides it with sets of methods
@@ -13,7 +14,7 @@ import Subscriber from "../utils/subscriber";
 class QueryAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { operation, options, queries, store, client, name } = props;
+    let { operation, options, queries, store, client } = props;
     invariant(
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
@@ -31,7 +32,6 @@ class QueryAdvanced extends React.PureComponent {
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
-    invariant(name, "The [name] props must be supplied to Query component");
     this.subscriber = new Subscriber(store, client);
     this.beforeFirstRenderCall();
   }
@@ -39,7 +39,6 @@ class QueryAdvanced extends React.PureComponent {
   static propTypes = {
     operation: PropTypes.string.isRequired,
     skip: PropTypes.bool,
-    name: PropTypes.string.isRequired,
     options: PropTypes.shape({
       config: PropTypes.object,
       fetchPolicy: PropTypes.oneOf([
@@ -53,6 +52,10 @@ class QueryAdvanced extends React.PureComponent {
     renderLoading: PropTypes.element,
     client: PropTypes.any,
     store: PropTypes.any
+  };
+
+  createSignatureHash = (operation, config) => {
+    this.signature = createSignatureHash(operation, config);
   };
 
   setInitialStateBeforeMount = (operation, arg) => {
@@ -165,11 +168,12 @@ class QueryAdvanced extends React.PureComponent {
    *
    * @param {any} data
    */
-  setSuccessDataState = data => {
+  setSuccessDataState = (data, config) => {
     let initialDataSettings = { isInitialDataSet: true },
-      { operation, name, store } = this.props,
+      { operation, store } = this.props,
+      hashedName = this.createSignatureHash(operation, config),
       overallState = store.getState()[types.SET_QUERY_DATA] || {},
-      _newState = { ...overallState, [name]: data };
+      _newState = { ...overallState, [operation]: data };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
     this.setState({
@@ -219,7 +223,7 @@ class QueryAdvanced extends React.PureComponent {
       this.subscriber
         .subscribeToQuery(operation, _config)
         .then(response => {
-          this.setSuccessDataState(response.data);
+          this.setSuccessDataState(response.data, _config);
         })
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
@@ -256,7 +260,7 @@ class QueryAdvanced extends React.PureComponent {
             _result,
             "A result of any type must be returned to form the new state from the updateQuery config option"
           );
-          this.setSuccessDataState(_result);
+          this.setSuccessDataState(_result, _config);
         })
         .catch(error =>
           this.setErrorDataState(error.response || error.message)
@@ -321,7 +325,6 @@ export default (Query = ({ children, ...rest }) => (
 Query.propTypes = {
   children: PropTypes.any,
   operation: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
   skip: PropTypes.bool,
   options: PropTypes.shape({
     config: PropTypes.object,
