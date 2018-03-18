@@ -54,10 +54,6 @@ class QueryAdvanced extends React.PureComponent {
     store: PropTypes.any
   };
 
-  createSignatureHash = (operation, config) => {
-    this.signature = createSignatureHash(operation, config);
-  };
-
   setInitialStateBeforeMount = (operation, arg) => {
     this.state = {
       [operation]: { ...arg }
@@ -76,6 +72,7 @@ class QueryAdvanced extends React.PureComponent {
   beforeFirstRenderCall = () => {
     let { options, queries, operation } = this.props,
       _options = options || {},
+      _config = _options.config || {},
       _fetchPolicy = _options.fetchPolicy || "cache-first",
       _queries = queries || {},
       _state = {};
@@ -88,7 +85,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-only":
         invariant(
-          _queries[operation],
+          _queries[createSignatureHash(operation, _config)],
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -99,7 +96,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-and-network":
         invariant(
-          _queries[operation],
+          _queries[createSignatureHash(operation, _config)],
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -111,7 +108,7 @@ class QueryAdvanced extends React.PureComponent {
         this.refetchQuery(undefined);
         break;
       default:
-        if (_queries[operation]) {
+        if (_queries[createSignatureHash(operation, _config)]) {
           _state = { ..._state, ...this.getInitialStateFromStore() };
           this.setInitialStateBeforeMount(operation, _state);
         } else {
@@ -130,11 +127,14 @@ class QueryAdvanced extends React.PureComponent {
    * from the cache or the store
    */
   getInitialStateFromStore = () => {
-    let { operation, queries } = this.props;
+    let { operation, queries, options } = this.props,
+      _options = options || {},
+      _config = _options.config || {},
+      data = queries[createSignatureHash(operation, _config)];
     return {
       loading: false,
-      isInitialDataSet: queries[operation] ? true : false,
-      data: queries[operation]
+      isInitialDataSet: data ? true : false,
+      data
     };
   };
 
@@ -171,9 +171,11 @@ class QueryAdvanced extends React.PureComponent {
   setSuccessDataState = (data, config) => {
     let initialDataSettings = { isInitialDataSet: true },
       { operation, store } = this.props,
-      hashedName = this.createSignatureHash(operation, config),
       overallState = store.getState()[types.SET_QUERY_DATA] || {},
-      _newState = { ...overallState, [operation]: data };
+      _newState = {
+        ...overallState,
+        [createSignatureHash(operation, config)]: data
+      };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
     this.setState({
