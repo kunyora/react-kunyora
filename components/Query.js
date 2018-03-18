@@ -70,7 +70,7 @@ class QueryAdvanced extends React.PureComponent {
    * which has not been mounted yet
    */
   beforeFirstRenderCall = () => {
-    let { options, queries, operation } = this.props,
+    let { options, queries, operation, skip } = this.props,
       _options = options || {},
       _config = _options.config || {},
       _fetchPolicy = _options.fetchPolicy || "cache-first",
@@ -85,7 +85,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-only":
         invariant(
-          _queries[createSignatureHash(operation, _config)],
+          _queries[createSignatureHash(operation, _config)] && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -96,7 +96,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-and-network":
         invariant(
-          _queries[createSignatureHash(operation, _config)],
+          _queries[createSignatureHash(operation, _config)] && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -127,10 +127,12 @@ class QueryAdvanced extends React.PureComponent {
    * from the cache or the store
    */
   getInitialStateFromStore = () => {
-    let { operation, queries, options } = this.props,
+    let { operation, queries, options, skip } = this.props,
       _options = options || {},
       _config = _options.config || {},
-      data = queries[createSignatureHash(operation, _config)];
+      data = skip
+        ? undefined
+        : queries[createSignatureHash(operation, _config)];
     return {
       loading: false,
       isInitialDataSet: data ? true : false,
