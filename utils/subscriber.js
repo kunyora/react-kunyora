@@ -1,6 +1,8 @@
 import invariant from "invariant";
-import * as types from "../types";
 import _ from "lodash";
+
+import * as types from "../types";
+import { createSignatureHash } from "./auxillaries";
 
 /**
  * This module is useful in subscribing for API push or runnable methods
@@ -275,7 +277,7 @@ Subscriber.prototype.getQueryFromStore = function(
   progressCallback
 ) {
   let overall = this.store.getState()[types.SET_QUERY_DATA] || {},
-    queryState = overall[operation];
+    queryState = overall[createSignatureHash(operation, config)];
 
   if (queryState) {
     this.progressCount += 100;
