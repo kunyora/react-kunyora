@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import invariant from "invariant";
+import _ from "lodash";
 
 import Connect from "../auxillary_components/Connect";
 import * as types from "../types";
@@ -121,6 +122,25 @@ class QueryAdvanced extends React.PureComponent {
     }
     return _state;
   };
+
+  componentWillReceiveProps(nextProps) {
+    let { queries, skip } = nextProps,
+      { operation, options } = this.props,
+      { [operation]: { data } } = this.state,
+      _options = options || {},
+      _config = _options.config || {};
+
+    if (!skip) {
+      if (!_.isEqual(queries[createSignatureHash(operation, _config)], data)) {
+        this.setState({
+          [operation]: {
+            ...this.state[operation],
+            data: queries[createSignatureHash(operation, _config)]
+          }
+        });
+      }
+    }
+  }
 
   /**
    * getInitialStateFromStore gets the initial state of the component
