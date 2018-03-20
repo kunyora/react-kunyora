@@ -307,7 +307,7 @@ Subscriber.prototype.getQueryAxiosInstance = function(
     ...config,
     onDownloadProgress: e => {
       let requestProgress = e.loaded / e.total * 100;
-      this.progressCount += requestProgress;
+      this.progressCount += requestProgress >= 10 ? requestProgress : 10;
       let _percentCount = this.progressCount / this.lengthOfArrayOfQueryConfig;
       progressCallback(_percentCount || 0);
     }
