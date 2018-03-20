@@ -130,8 +130,9 @@ class QueryAdvanced extends React.PureComponent {
       _options = options || {},
       _config = _options.config || {};
 
+    let _data = queries[createSignatureHash(operation, _config)];
     if (!skip) {
-      if (!_.isEqual(queries[createSignatureHash(operation, _config)], data)) {
+      if (!_.isEqual(_data, data) && _data) {
         this.setState({
           [operation]: {
             ...this.state[operation],
