@@ -124,21 +124,23 @@ class QueryAdvanced extends React.PureComponent {
   };
 
   componentWillReceiveProps(nextProps) {
-    let { queries, skip } = nextProps,
-      { operation, options } = this.props,
-      { [operation]: { data } } = this.state,
-      _options = options || {},
-      _config = _options.config || {};
+    if (nextProps.queries) {
+      let { queries, skip } = nextProps,
+        { operation, options } = this.props,
+        { [operation]: { data } } = this.state,
+        _options = options || {},
+        _config = _options.config || {};
 
-    let _data = queries[createSignatureHash(operation, _config)];
-    if (!skip) {
-      if (!_.isEqual(_data, data) && _data) {
-        this.setState({
-          [operation]: {
-            ...this.state[operation],
-            data: queries[createSignatureHash(operation, _config)]
-          }
-        });
+      let _data = queries[createSignatureHash(operation, _config)];
+      if (!skip) {
+        if (!_.isEqual(_data, data) && _data) {
+          this.setState({
+            [operation]: {
+              ...this.state[operation],
+              data: queries[createSignatureHash(operation, _config)]
+            }
+          });
+        }
       }
     }
   }
