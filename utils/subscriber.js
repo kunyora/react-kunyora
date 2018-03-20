@@ -45,7 +45,7 @@ Subscriber.prototype.subscribeToQuery = function(operation, config) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
     let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeCallback(_.cloneDeep(headers));
+      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
 
     _promise = this.sendQuery(requestHeaders, config, operation);
   } else {
@@ -94,7 +94,7 @@ Subscriber.prototype.subscribeToMutation = function(operation, config) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
     let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeCallback(_.cloneDeep(headers));
+      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
 
     _promise = this.sendMutation(requestHeaders, config, operation);
   } else {
@@ -146,7 +146,7 @@ Subscriber.prototype.subscribeToMultiConcurrentQueries = function(
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
     let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeCallback(_.cloneDeep(headers));
+      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
 
     _promise = this.sendMultipleConcurrentQueries(
       requestHeaders,
@@ -321,9 +321,9 @@ Subscriber.prototype.getQueryAxiosInstance = function(
  * @param {any} response
  */
 Subscriber.prototype.sendResponseToCallback = function(response) {
-  let { isUseAfterCallbackSupplied, useAfterCallback } = this.client;
+  let { isUseAfterCallbackSupplied, useAfterResponse } = this.client;
   if (isUseAfterCallbackSupplied) {
-    useAfterCallback(response);
+    useAfterResponse(response);
   }
 };
 
