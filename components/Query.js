@@ -298,9 +298,9 @@ class QueryAdvanced extends React.PureComponent {
   render() {
     let { operation, renderLoading, renderError } = this.props,
       { [operation]: { loading, error } } = this.state;
-    if (loading && renderLoading) {
+    if (loading && (renderLoading === null || renderLoading !== undefined)) {
       return renderLoading;
-    } else if (error && renderError) {
+    } else if (error && (renderError === null || renderError !== undefined)) {
       return renderError;
     } else {
       return this.props.children(
