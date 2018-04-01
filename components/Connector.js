@@ -97,7 +97,7 @@ class ConnectorAdvanced extends React.PureComponent {
     timeout: PropTypes.number
   };
 
-  componentWillMount() {
+  componentDidMount() {
     let { timeout, loader, errorComponent } = this.props;
     //If a loader props is supplied, then we load the component and update the state
     //We use Promise.race to run 2 promises, a promise to load the component and another promise to set a timeout
