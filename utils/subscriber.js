@@ -137,11 +137,9 @@ Subscriber.prototype.sendMutation = function(headers, config, operation) {
  *
  * @return {Promise}
  * @param {Array} arrayOfQueryConfig
- * @param {Function} progressCallback
  */
 Subscriber.prototype.subscribeToMultiConcurrentQueries = function(
-  arrayOfQueryConfig,
-  progressCallback
+  arrayOfQueryConfig
 ) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
@@ -150,15 +148,10 @@ Subscriber.prototype.subscribeToMultiConcurrentQueries = function(
 
     _promise = this.sendMultipleConcurrentQueries(
       requestHeaders,
-      arrayOfQueryConfig,
-      progressCallback
+      arrayOfQueryConfig
     );
   } else {
-    _promise = this.sendMultipleConcurrentQueries(
-      null,
-      arrayOfQueryConfig,
-      progressCallback
-    );
+    _promise = this.sendMultipleConcurrentQueries(null, arrayOfQueryConfig);
   }
   return _promise;
 };
@@ -170,17 +163,15 @@ Subscriber.prototype.subscribeToMultiConcurrentQueries = function(
  * @return {Promise}
  * @param {Object} headers
  * @param {Array} arrayOfQueryConfig
- * @param {Function} progressCallback
  */
 Subscriber.prototype.sendMultipleConcurrentQueries = function(
   headers,
-  arrayOfQueryConfig,
-  progressCallback
+  arrayOfQueryConfig
 ) {
   let _promise = new Promise((resolve, reject) => {
     if (headers) this.client.defaults.headers = headers;
 
-    this.buildRequestHandshakePromise(arrayOfQueryConfig, progressCallback)
+    this.buildRequestHandshakePromise(arrayOfQueryConfig)
       .then(response => {
         this.sendResponseToCallback(response);
         resolve(this.loader ? response.splice(1) : response);
@@ -200,21 +191,17 @@ Subscriber.prototype.sendMultipleConcurrentQueries = function(
  *
  * @return {Promise}
  * @param {Array} arrayOfQueryConfig
- * @param {Function} progressCallback
  */
 Subscriber.prototype.buildRequestHandshakePromise = function(
-  arrayOfQueryConfig,
-  progressCallback
+  arrayOfQueryConfig
 ) {
   let _promise = null;
   if (!this.loader) {
-    _promise = Promise.all([
-      ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
-    ]);
+    _promise = Promise.all([...this.composeAxiosInstance(arrayOfQueryConfig)]);
   } else {
     _promise = Promise.all([
       this.loader(),
-      ...this.composeAxiosInstance(arrayOfQueryConfig, progressCallback)
+      ...this.composeAxiosInstance(arrayOfQueryConfig)
     ]);
   }
   return _promise;
@@ -229,12 +216,8 @@ Subscriber.prototype.buildRequestHandshakePromise = function(
  *
  * @return {Array}
  * @param {Array} arrayOfQueryConfig
- * @param {Function} progressCallback
  */
-Subscriber.prototype.composeAxiosInstance = function(
-  arrayOfQueryConfig,
-  progressCallback
-) {
+Subscriber.prototype.composeAxiosInstance = function(arrayOfQueryConfig) {
   this.lengthOfArrayOfQueryConfig = arrayOfQueryConfig.length;
   let reducedAxiosReduced = arrayOfQueryConfig.reduce(
     (acc, { operation, config, fetchPolicy }) => {
@@ -242,17 +225,9 @@ Subscriber.prototype.composeAxiosInstance = function(
         _instance = null,
         _fetchPolicy = fetchPolicy || "network-only";
       if (_fetchPolicy === "cache-first") {
-        _instance = this.getQueryFromStore(
-          operation,
-          _config,
-          progressCallback
-        );
+        _instance = this.getQueryFromStore(operation, _config);
       } else {
-        _instance = this.getQueryAxiosInstance(
-          operation,
-          _config,
-          progressCallback
-        );
+        _instance = this.getQueryAxiosInstance(operation, _config);
       }
       acc.push(_instance);
       return acc;
@@ -269,22 +244,15 @@ Subscriber.prototype.composeAxiosInstance = function(
  * @return {Promise}
  * @param {String} operation
  * @param {Object} config
- * @param {Function} progressCallback
  */
-Subscriber.prototype.getQueryFromStore = function(
-  operation,
-  config,
-  progressCallback
-) {
+Subscriber.prototype.getQueryFromStore = function(operation, config) {
   let overall = this.store.getState()[types.SET_QUERY_DATA] || {},
     queryState = overall[createSignatureHash(operation, config)];
 
   if (queryState) {
-    this.progressCount += 100;
-    progressCallback(this.progressCount / this.lengthOfArrayOfQueryConfig);
     return new Promise((resolve, reject) => resolve({ data: queryState }));
   } else {
-    return this.getQueryAxiosInstance(operation, config, progressCallback);
+    return this.getQueryAxiosInstance(operation, config);
   }
 };
 
@@ -296,21 +264,10 @@ Subscriber.prototype.getQueryFromStore = function(
  * @return {Promise}
  * @param {String} operation
  * @param {Object} config
- * @param {Function} progressCallback
  */
-Subscriber.prototype.getQueryAxiosInstance = function(
-  operation,
-  config,
-  progressCallback
-) {
+Subscriber.prototype.getQueryAxiosInstance = function(operation, config) {
   return this.client[operation]({
-    ...config,
-    onDownloadProgress: e => {
-      let requestProgress = e.loaded / e.total * 100;
-      this.progressCount += requestProgress >= 10 ? requestProgress : 10;
-      let _percentCount = this.progressCount / this.lengthOfArrayOfQueryConfig;
-      progressCallback(_percentCount || 0);
-    }
+    ...config
   });
 };
 
