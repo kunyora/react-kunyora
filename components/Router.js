@@ -116,15 +116,10 @@ class RouterAdvanced extends React.PureComponent {
   //This function triggers a download of all the necessary resources needed to send the application
   //to the next view and imperatively sends the application to the next view after the data has been gotten
   push = () => {
-    let { resources, name } = this.props;
+    let { resources, name, store } = this.props;
+    store.performAsyncAction(asyncActions.startProgressCount(name));
     this.subscriber
-      .subscribeToMultiConcurrentQueries(resources, progress => {
-        let { store, name } = this.props,
-          overallState =
-            store.getState()[types.SET_PAGE_DOWNLOAD_PROGRESS] || {},
-          _newState = { ...overallState, [name]: progress / 2 };
-        store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, _newState);
-      })
+      .subscribeToMultiConcurrentQueries(resources)
       .then(response => this.setSuccessDataState(response))
       .catch(error => this.setErrorDataState(error.response || error.message));
   };
