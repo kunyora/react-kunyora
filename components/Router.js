@@ -47,6 +47,7 @@ class RouterAdvanced extends React.PureComponent {
     this.state = {
       [name]: {}
     };
+    this.isComponentMounted = true;
     this.subscriber = new Subscriber(store, client, true, loader);
   }
 
@@ -66,6 +67,10 @@ class RouterAdvanced extends React.PureComponent {
     progress: PropTypes.any
   };
 
+  componentWillUnmount() {
+    this.isComponentMounted = false;
+  }
+
   /**
    * This function sets the state after a rejection must have been thrown by the application
    *
@@ -73,12 +78,14 @@ class RouterAdvanced extends React.PureComponent {
    */
   setErrorDataState = error => {
     let { name } = this.props;
-    this.setState({
-      [name]: {
-        ...this.state[name],
-        error
-      }
-    });
+    if (this.isComponentMounted) {
+      this.setState({
+        [name]: {
+          ...this.state[name],
+          error
+        }
+      });
+    }
   };
 
   /**

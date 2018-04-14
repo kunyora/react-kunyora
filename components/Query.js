@@ -33,6 +33,7 @@ class QueryAdvanced extends React.PureComponent {
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
+    this.isComponentMounted = true;
     this.subscriber = new Subscriber(store, client);
     this.beforeFirstRenderCall();
   }
@@ -54,6 +55,32 @@ class QueryAdvanced extends React.PureComponent {
     client: PropTypes.any,
     store: PropTypes.any
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.queries) {
+      let { queries, skip } = nextProps,
+        { operation, options } = this.props,
+        { [operation]: { data } } = this.state,
+        _options = options || {},
+        _config = _options.config || {};
+
+      let _data = queries[createSignatureHash(operation, _config)];
+      if (!skip) {
+        if (!_.isEqual(_data, data) && _data && this.isComponentMounted) {
+          this.setState({
+            [operation]: {
+              ...this.state[operation],
+              data: queries[createSignatureHash(operation, _config)]
+            }
+          });
+        }
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.isComponentMounted = false;
+  }
 
   setInitialStateBeforeMount = (operation, arg) => {
     this.state = {
@@ -123,28 +150,6 @@ class QueryAdvanced extends React.PureComponent {
     return _state;
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.queries) {
-      let { queries, skip } = nextProps,
-        { operation, options } = this.props,
-        { [operation]: { data } } = this.state,
-        _options = options || {},
-        _config = _options.config || {};
-
-      let _data = queries[createSignatureHash(operation, _config)];
-      if (!skip) {
-        if (!_.isEqual(_data, data) && _data) {
-          this.setState({
-            [operation]: {
-              ...this.state[operation],
-              data: queries[createSignatureHash(operation, _config)]
-            }
-          });
-        }
-      }
-    }
-  }
-
   /**
    * getInitialStateFromStore gets the initial state of the component
    * from the cache or the store
@@ -175,7 +180,7 @@ class QueryAdvanced extends React.PureComponent {
     let { operation } = this.props,
       _previousState = (this.state && this.state[operation]) || this._state;
 
-    if (this._state) {
+    if (this._state && this.isComponentMounted) {
       this.setState({
         [operation]: {
           ..._previousState,
@@ -203,15 +208,17 @@ class QueryAdvanced extends React.PureComponent {
       };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
-    this.setState({
-      [operation]: {
-        ...this.state[operation],
-        error: undefined,
-        ...initialDataSettings,
-        loading: false,
-        data
-      }
-    });
+    if (this.isComponentMounted) {
+      this.setState({
+        [operation]: {
+          ...this.state[operation],
+          error: undefined,
+          ...initialDataSettings,
+          loading: false,
+          data
+        }
+      });
+    }
   };
 
   /**
@@ -221,13 +228,15 @@ class QueryAdvanced extends React.PureComponent {
    */
   setErrorDataState = error => {
     let { operation } = this.props;
-    this.setState({
-      [operation]: {
-        ...this.state[operation],
-        loading: false,
-        error
-      }
-    });
+    if (this.isComponentMounted) {
+      this.setState({
+        [operation]: {
+          ...this.state[operation],
+          loading: false,
+          error
+        }
+      });
+    }
   };
 
   /**

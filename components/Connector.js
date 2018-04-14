@@ -60,6 +60,8 @@ class ConnectorAdvanced extends React.PureComponent {
       );
     }
 
+    this.isComponentMounted = true;
+
     // Delay is set to 2000 milliseconds by default
     // Timeout is set to 100000000 milliseconds by default
     this.delay = delay || 2000;
@@ -79,10 +81,12 @@ class ConnectorAdvanced extends React.PureComponent {
         renderState !== RENDER_STATES[2] &&
         renderState !== RENDER_STATES[1]
       ) {
-        this.setState({
-          component: loadingComponent,
-          renderState: RENDER_STATES[1]
-        });
+        if (this.isComponentMounted) {
+          this.setState({
+            component: loadingComponent,
+            renderState: RENDER_STATES[1]
+          });
+        }
       }
     }, this.delay);
   }
@@ -104,18 +108,26 @@ class ConnectorAdvanced extends React.PureComponent {
     if (loader) {
       Promise.race([this.timedOutPromise(), this.loadable()])
         .then(data => {
-          this.setState({
-            component: data.component,
-            renderState: RENDER_STATES[2]
-          });
+          if (this.isComponentMounted) {
+            this.setState({
+              component: data.component,
+              renderState: RENDER_STATES[2]
+            });
+          }
         })
-        .catch(error =>
-          this.setState({
-            component: errorComponent,
-            renderState: RENDER_STATES[1]
-          })
-        );
+        .catch(error => {
+          if (this.isComponentMounted) {
+            this.setState({
+              component: errorComponent,
+              renderState: RENDER_STATES[1]
+            });
+          }
+        });
     }
+  }
+
+  componentWillUnmount() {
+    this.isComponentMounted = false;
   }
 
   timedOutPromise = () => {

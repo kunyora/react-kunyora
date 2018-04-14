@@ -39,6 +39,7 @@ class MutationAdvanced extends React.PureComponent {
     this.state = {
       [operation]: { loading: false }
     };
+    this.isComponentMounted = true;
     this.subscriber = new Subscriber(store, client);
   }
 
@@ -57,13 +58,19 @@ class MutationAdvanced extends React.PureComponent {
     store: PropTypes.any
   };
 
+  componentWillUnmount() {
+    this.isComponentMounted = false;
+  }
+
   setLoadingDataState = () => {
     let { operation } = this.props;
-    this.setState({
-      [operation]: {
-        loading: !this.state[operation].loading
-      }
-    });
+    if (this.isComponentMounted) {
+      this.setState({
+        [operation]: {
+          loading: !this.state[operation].loading
+        }
+      });
+    }
   };
 
   /**
