@@ -59,18 +59,15 @@ class QueryAdvanced extends React.PureComponent {
   componentWillReceiveProps(nextProps) {
     if (nextProps.queries) {
       let { queries, skip } = nextProps,
-        { operation, options } = this.props,
-        { [operation]: { data } } = this.state,
-        _options = options || {},
-        _config = _options.config || {};
+        { operation } = this.props,
+        { [operation]: { data } } = this.state;
 
-      let _data = queries[createSignatureHash(operation, _config)];
       if (!skip) {
-        if (!_.isEqual(_data, data) && _data && this.isComponentMounted) {
+        if (!_.isEqual(queries, data) && queries && this.isComponentMounted) {
           this.setState({
             [operation]: {
               ...this.state[operation],
-              data: queries[createSignatureHash(operation, _config)]
+              data: queries
             }
           });
         }
@@ -100,9 +97,7 @@ class QueryAdvanced extends React.PureComponent {
   beforeFirstRenderCall = () => {
     let { options, queries, operation, skip } = this.props,
       _options = options || {},
-      _config = _options.config || {},
       _fetchPolicy = _options.fetchPolicy || "cache-first",
-      _queries = queries || {},
       _state = {};
     switch (_fetchPolicy) {
       case "network-only":
@@ -113,7 +108,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-only":
         invariant(
-          _queries[createSignatureHash(operation, _config)] && !skip,
+          queries && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -124,7 +119,7 @@ class QueryAdvanced extends React.PureComponent {
         break;
       case "cache-and-network":
         invariant(
-          _queries[createSignatureHash(operation, _config)] && !skip,
+          queries && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
         _state = {
@@ -136,7 +131,7 @@ class QueryAdvanced extends React.PureComponent {
         this.refetchQuery(undefined);
         break;
       default:
-        if (_queries[createSignatureHash(operation, _config)]) {
+        if (queries) {
           _state = { ..._state, ...this.getInitialStateFromStore() };
           this.setInitialStateBeforeMount(operation, _state);
         } else {
@@ -155,12 +150,8 @@ class QueryAdvanced extends React.PureComponent {
    * from the cache or the store
    */
   getInitialStateFromStore = () => {
-    let { operation, queries, options, skip } = this.props,
-      _options = options || {},
-      _config = _options.config || {},
-      data = skip
-        ? undefined
-        : queries[createSignatureHash(operation, _config)];
+    let { queries, skip } = this.props,
+      data = skip ? undefined : queries;
     return {
       loading: false,
       isInitialDataSet: data ? true : false,
@@ -324,10 +315,16 @@ class QueryAdvanced extends React.PureComponent {
 /**
  * @return {Object}
  * @param {Object} state
+ * @param {string} operation
+ * @param {object} options
  */
-function mapStateToProps(state) {
+function mapStateToProps(state, operation, options) {
+  let _options = options || {},
+    _config = _options.config || {},
+    _overallState = state[types.SET_QUERY_DATA] || {};
+
   return {
-    queries: state[types.SET_QUERY_DATA]
+    queries: _overallState[createSignatureHash(operation, _config)]
   };
 }
 
@@ -340,7 +337,11 @@ let Query = null;
  * It tells Connect what tree of the state object should be sent down to Connect as props
  */
 export default (Query = ({ children, ...rest }) => (
-  <Connect mapStateToProps={mapStateToProps}>
+  <Connect
+    mapStateToProps={state =>
+      mapStateToProps(state, rest.operation, rest.options)
+    }
+  >
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
       return (

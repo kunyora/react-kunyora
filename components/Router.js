@@ -132,15 +132,15 @@ class RouterAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { name, progress } = this.props,
-      _progress = progress || {};
-    return this.props.children(this.state[name], _progress[name], this.push);
+    let { name, progress } = this.props;
+    return this.props.children(this.state[name], progress, this.push);
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, name) {
+  let _overallState = state[types.SET_PAGE_DOWNLOAD_PROGRESS] || {};
   return {
-    progress: state[types.SET_PAGE_DOWNLOAD_PROGRESS]
+    progress: _overallState[name]
   };
 }
 
@@ -152,7 +152,7 @@ let Router = null;
  * @param {Object} [{children: any, rest: Object}]
  */
 export default (Router = ({ children, ...rest }) => (
-  <Connect mapStateToProps={mapStateToProps}>
+  <Connect mapStateToProps={state => mapStateToProps(state, rest.name)}>
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
       return (

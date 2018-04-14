@@ -157,8 +157,7 @@ class ConnectorAdvanced extends React.PureComponent {
   render() {
     let { name, progress, children, loader } = this.props,
       { component, renderState } = this.state,
-      _progress = progress || {},
-      _progressCount = _progress[name] || 0;
+      _progressCount = progress || 0;
     if (!loader) {
       //if loader doesn't exist
       return children({ progress: _progressCount }, false, null);
@@ -182,9 +181,15 @@ class ConnectorAdvanced extends React.PureComponent {
   }
 }
 
-function mapStateToProps(state) {
+/**
+ *
+ * @param {any} state
+ * @param {string} name
+ */
+function mapStateToProps(state, name) {
+  let _overallState = state[types.SET_PAGE_DOWNLOAD_PROGRESS] || {};
   return {
-    progress: state[types.SET_PAGE_DOWNLOAD_PROGRESS]
+    progress: _overallState[name]
   };
 }
 
@@ -200,7 +205,7 @@ let Connector = null;
  * @param {Object} [{children: any, rest: Object}]
  */
 export default (Connector = ({ children, ...rest }) => (
-  <Connect mapStateToProps={mapStateToProps}>
+  <Connect mapStateToProps={state => mapStateToProps(state, rest.name)}>
     {(props, context) => {
       let composedProps = { ...context, ...rest, ...props };
       return (
