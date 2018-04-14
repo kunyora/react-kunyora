@@ -34,7 +34,7 @@ export const startProgressCount = name => store => {
   } catch (error) {
     invariant(
       window,
-      "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
+      "React-Kunyora does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
     );
   }
 };
@@ -79,7 +79,7 @@ export const completeProgressCount = name => store => {
   } catch (error) {
     invariant(
       window,
-      "React-Composer does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
+      "React-Kunyora does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
     );
   }
 };

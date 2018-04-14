@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
 
-import { ComposerContext } from "../components/ComposerProvider";
+import { KunyoraContext } from "../components/KunyoraProvider";
 
 /**
  * ConnectAdvanced wraps all Queries, Router and Connector component of the application
@@ -81,7 +81,7 @@ let Connect = null;
  * @param {Object} [{children: any, rest: Object}]
  */
 export default (Connect = ({ children, ...rest }) => (
-  <ComposerContext.Consumer>
+  <KunyoraContext.Consumer>
     {context => {
       let composedProps = { ...context, ...rest };
       return (
@@ -90,7 +90,7 @@ export default (Connect = ({ children, ...rest }) => (
         </ConnectAdvanced>
       );
     }}
-  </ComposerContext.Consumer>
+  </KunyoraContext.Consumer>
 ));
 
 Connect.propTypes = {

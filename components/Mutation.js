@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import invariant from "invariant";
 
 import Subscriber from "../utils/subscriber";
-import { ComposerContext } from "./ComposerProvider";
+import { KunyoraContext } from "./KunyoraProvider";
 import * as types from "../types";
 import { createSignatureHash } from "../utils/auxillaries";
 
@@ -142,7 +142,7 @@ let Mutation = null;
  * @param {Object} [{children: any, rest: Object}]
  */
 export default (Mutation = ({ children, ...rest }) => (
-  <ComposerContext.Consumer>
+  <KunyoraContext.Consumer>
     {context => {
       let composedProps = { ...context, ...rest };
       return (
@@ -151,7 +151,7 @@ export default (Mutation = ({ children, ...rest }) => (
         </MutationAdvanced>
       );
     }}
-  </ComposerContext.Consumer>
+  </KunyoraContext.Consumer>
 ));
 
 Mutation.propTypes = {

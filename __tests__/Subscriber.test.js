@@ -1,9 +1,9 @@
-import ComposerClient from "composer-client";
+import KunyoraClient from "kunyora";
 
 import Subsciber from "../utils/subscriber";
 import client from "../__customMockData__/client.mock";
 
-const Client = ComposerClient({});
+const Client = KunyoraClient({});
 
 let subscriber = new Subsciber(Client.store, client),
   configs = [{ operation: "getUsers" }, { operation: "getPosts" }];

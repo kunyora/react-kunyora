@@ -31,7 +31,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, "dist"),
     publicPath: "/dists/",
-    filename: "react-composer.js",
+    filename: "react-kunyora.js",
     libraryTarget: "commonjs2"
   },
   target: "node",
