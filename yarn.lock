@@ -1235,14 +1235,6 @@ commondir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
 
-"composer-client@https://github.com/kayslay/composer-client.git":
-  version "1.0.0"
-  resolved "https://github.com/kayslay/composer-client.git#62b9a771ed7cb8f2ba3574879b92e0620555c2da"
-  dependencies:
-    axios "^0.17.1"
-    camelcase "^4.1.0"
-    invariant "^2.2.2"
-
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -2814,6 +2806,14 @@ kind-of@^4.0.0:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-4.0.0.tgz#20813df3d712928b207378691a45066fae72dd57"
   dependencies:
     is-buffer "^1.1.5"
+
+"kunyora@https://github.com/kunyora/kunyora.git":
+  version "1.0.0"
+  resolved "https://github.com/kunyora/kunyora.git#b53cc5f9181fbc04a667ec7eb2d1ad8639d9136b"
+  dependencies:
+    axios "^0.17.1"
+    camelcase "^4.1.0"
+    invariant "^2.2.2"
 
 lazy-cache@^1.0.3:
   version "1.0.4"

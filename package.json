@@ -1,6 +1,6 @@
 {
   "name": "react-kunyora",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/react-kunyora.js",
   "scripts": {
@@ -25,10 +25,10 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
-    "kunyora": "https://github.com/kunyora/kunyora.git",
     "create-react-context": "^0.1.6",
     "immutable": "^3.8.2",
     "invariant": "^2.2.2",
+    "kunyora": "https://github.com/kunyora/kunyora.git",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0"
   }
