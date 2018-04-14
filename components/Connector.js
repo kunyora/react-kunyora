@@ -195,7 +195,7 @@ export default (Connector = ({ children, ...rest }) => (
         <ConnectorAdvanced {...composedProps}>
           {(passedProps, isCodeSplitted, Component, useCloneElement) => {
             let _component = !isCodeSplitted
-              ? children(passedProps)
+              ? children(null, passedProps)
               : !useCloneElement
                 ? children(Component, passedProps)
                 : Component !== null
