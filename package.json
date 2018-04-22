@@ -7,7 +7,8 @@
     "build": "webpack",
     "test": "jest",
     "watch:build": "webpack -w",
-    "watch:test": "jest --watchAll"
+    "watch:test": "jest --watchAll",
+    "prepublish": "yarn install && yarn run test && yarn run build"
   },
   "keywords": [],
   "author": "Anifowoshe Gbenga David <daveanifowoshe@ymail.com>",
@@ -28,7 +29,7 @@
     "create-react-context": "^0.1.6",
     "immutable": "^3.8.2",
     "invariant": "^2.2.2",
-    "kunyora": "https://github.com/kunyora/kunyora.git",
+    "kunyora": "^0.1.0",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0"
   },
