@@ -31,5 +31,11 @@
     "kunyora": "https://github.com/kunyora/kunyora.git",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0"
+  },
+  "bugs": {
+    "url": "https://github.com/kunyora/react-kunyora/issues"
+  },
+  "homepage": {
+    "url": "https://kunyora.github.io/kunyora/query_component.html"
   }
 }
