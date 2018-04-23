@@ -8,7 +8,7 @@
     "test": "jest",
     "watch:build": "webpack -w",
     "watch:test": "jest --watchAll",
-    "prepublish": "yarn install && yarn run test && yarn run build"
+    "prepublish": "yarn run test && yarn run build"
   },
   "keywords": [],
   "author": "Anifowoshe Gbenga David <daveanifowoshe@ymail.com>",
