@@ -38,5 +38,6 @@
   },
   "homepage": {
     "url": "https://kunyora.github.io/kunyora/query_component.html"
-  }
+  },
+  "unpkg": "dist/react-kunyora.js"
 }
