@@ -4,7 +4,7 @@ We are open to, and grateful for, any contributions made by the community. By co
 
 ### Code Style
 
-Please follow the [Airbnb react JS style guide](https://github.com/airbnb/javascript/tree/master/react)
+Please follow the [Airbnb react JS style guide](https://github.com/airbnb/javascript/blob/master/react/README.md)
 
 ### Commit Messages
 
