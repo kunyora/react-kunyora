@@ -1,4 +1,4 @@
-# [React-Kunyora](https://kunyora.github.io/kunyora/docs/kunyora_provider_component.html) 
+# [React-Kunyora](https://kunyora.github.io/kunyora/docs/kunyora_provider_component.html) &middot; [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md) 
 
 A flexible Rest Client for Javascript web and native applications
 
