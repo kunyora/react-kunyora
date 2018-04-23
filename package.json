@@ -1,7 +1,7 @@
 {
   "name": "react-kunyora",
   "version": "0.1.0",
-  "description": "",
+  "description": "A reactJs binding to kunyora that exposes some declarative apis used in performing restful request and improving speed",
   "main": "dist/react-kunyora.js",
   "scripts": {
     "build": "webpack",
