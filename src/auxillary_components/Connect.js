@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import _ from "lodash";
+import isEqual from "../utils/isEqual";
 
 import { KunyoraContext } from "../components/KunyoraProvider";
 
@@ -29,20 +29,23 @@ class ConnectAdvanced extends React.PureComponent {
 
   /**
    * This function checks the [state] status to see if it should be updated
-   * This is successfully done by carrying out a lodash deep comparism between the incoming store changes and the store changes
+   * This is successfully done by carrying out a deep comparism between the incoming store changes and the store changes
    * to see if there infact any changes to the store
    *
    * @return {Object} [{shouldSetState: boolean, nextState: Object}]
    */
   updateState = () => {
-    let { mapStateToProps, store: { getState, listen } } = this.props;
+    let {
+      mapStateToProps,
+      store: { getState, listen }
+    } = this.props;
 
     let componentState = this.state || {};
 
     let shouldSetState = false,
       nextProps = mapStateToProps(getState()),
       nextState = Object.keys(nextProps).reduce((acc, key) => {
-        if (!_.isEqual(nextProps[key], componentState[key])) {
+        if (!isEqual(nextProps[key], componentState[key])) {
           shouldSetState = true;
           acc[key] = nextProps[key];
         } else {
@@ -56,7 +59,9 @@ class ConnectAdvanced extends React.PureComponent {
   };
 
   subscribe = () => {
-    let { store: { listen } } = this.props;
+    let {
+      store: { listen }
+    } = this.props;
     this.unsubscribe = listen(() => {
       let { shouldSetState, nextState } = this.updateState();
       if (shouldSetState) {

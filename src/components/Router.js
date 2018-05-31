@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
+import warnings from "../utils/warnings"; 
 
 import * as types from "../types";
 import Connect from "../auxillary_components/Connect";
@@ -24,20 +24,20 @@ class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { name, resources, store, client, onRequestRoute, loader } = props;
-    invariant(
+    warning(
       typeof name === "string",
       "Props [name] must be passed to component Router and it must be of type string"
     );
-    invariant(
+    warning(
       typeof onRequestRoute === "function",
       "Props [onRequestRoute] must be passed to the component Router and it must be of type [function]"
     );
-    invariant(
+    warning(
       resources && resources instanceof Array,
       "[resources] property is required in props passed to the Router component \n and it must be of type Array"
     );
     if (loader) {
-      invariant(
+      warning(
         typeof loader === "function",
         "The [loader] props supplied to Router component must be of type [function]"
       );

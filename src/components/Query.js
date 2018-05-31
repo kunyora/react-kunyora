@@ -1,12 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
-import _ from "lodash";
+import warning from "../utils/warnings";
+import isEqual from "../utils/isEqual";
 
 import Connect from "../auxillary_components/Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 import { createSignatureHash } from "../utils/auxillaries";
+import warning from "../utils/warnings";
 
 /**
  * QueryAdvanced wraps the Query component and provides it with sets of methods
@@ -16,12 +17,12 @@ class QueryAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { operation, options, queries, store, client } = props;
-    invariant(
+    warning(
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
     );
     if (options && options.config) {
-      invariant(
+      warning(
         options &&
           options.config &&
           typeof options.config === "object" &&
@@ -29,7 +30,7 @@ class QueryAdvanced extends React.PureComponent {
         "[config] property in props [options] and must be of type [object] for your Query components"
       );
     }
-    invariant(
+    warning(
       operation.slice(0, 3).toUpperCase() === "GET",
       "It doesn't feel like you are about performing a query. Queries could only be of the form getUser, getTicket etc with the get method as a prefix. please check the docs"
     );
@@ -60,10 +61,12 @@ class QueryAdvanced extends React.PureComponent {
     if (nextProps.queries) {
       let { queries, skip } = nextProps,
         { operation } = this.props,
-        { [operation]: { data } } = this.state;
+        {
+          [operation]: { data }
+        } = this.state;
 
       if (!skip) {
-        if (!_.isEqual(queries, data) && queries && this.isComponentMounted) {
+        if (!isEqual(queries, data) && queries && this.isComponentMounted) {
           this.setState({
             [operation]: {
               ...this.state[operation],
@@ -107,7 +110,7 @@ class QueryAdvanced extends React.PureComponent {
         this.refetchQuery(undefined);
         break;
       case "cache-only":
-        invariant(
+        warning(
           queries && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
@@ -118,7 +121,7 @@ class QueryAdvanced extends React.PureComponent {
         this.setInitialStateBeforeMount(operation, _state);
         break;
       case "cache-and-network":
-        invariant(
+        warning(
           queries && !skip,
           "It appears that you want to get a query data which is not available in the cache. It is advisable to use cache-first fetch policy"
         );
@@ -270,7 +273,7 @@ class QueryAdvanced extends React.PureComponent {
       _options = options || {},
       { updateQuery } = fetchMoreOptions;
     if (!skip) {
-      invariant(
+      warning(
         updateQuery,
         "[updateQuery] is needed as a config parameter in [options.fetchMore]"
       );
@@ -283,7 +286,7 @@ class QueryAdvanced extends React.PureComponent {
           let _result = updateQuery(this.state[operation].data, {
             fetchMoreResult: response.data
           });
-          invariant(
+          warning(
             _result,
             "A result of any type must be returned to form the new state from the updateQuery config option"
           );
@@ -297,7 +300,9 @@ class QueryAdvanced extends React.PureComponent {
 
   render() {
     let { operation, renderLoading, renderError } = this.props,
-      { [operation]: { loading, error } } = this.state;
+      {
+        [operation]: { loading, error }
+      } = this.state;
     if (loading && (renderLoading === null || renderLoading !== undefined)) {
       return renderLoading;
     } else if (error && (renderError === null || renderError !== undefined)) {

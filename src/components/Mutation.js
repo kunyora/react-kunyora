@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
+import warning from "../utils/warnings";
 
 import Subscriber from "../utils/subscriber";
 import { KunyoraContext } from "./KunyoraProvider";
@@ -15,12 +15,12 @@ class MutationAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { operation, options, store, client } = props;
-    invariant(
+    warning(
       typeof operation === "string",
       "Props [operation] must be passed to component Mutation and it must be of type [string]"
     );
     if (options && options.config) {
-      invariant(
+      warning(
         options &&
           options.config &&
           typeof options.config === "object" &&
@@ -29,7 +29,7 @@ class MutationAdvanced extends React.PureComponent {
       );
     }
     //operations must be of type CREATE | UPDATE | PARTUPDATE | DELETE
-    invariant(
+    warning(
       operation.slice(0, 6).toUpperCase() === "CREATE" ||
         operation.slice(0, 6).toUpperCase() === "UPDATE" ||
         operation.slice(0, 10).toUpperCase() === "PARTUPDATE" ||

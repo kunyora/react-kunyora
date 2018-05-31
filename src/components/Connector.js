@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
+import warning from "../utils/warnings";
 
 import * as types from "../types";
 import Connect from "../auxillary_components/Connect";
@@ -43,18 +43,18 @@ class ConnectorAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { name, delay, loadingComponent, timeout } = this.props;
-    invariant(
+    warning(
       typeof name === "string",
       "The [name] prop must be passed to the Connector component and must be of type [string]"
     );
     if (delay) {
-      invariant(
+      warning(
         typeof delay === "number",
         "The delay supplied to the Connector component must be of type [number]"
       );
     }
     if (timeout) {
-      invariant(
+      warning(
         typeof timeout === "number",
         "The timeout supplied to the Connector component must be of type [number]"
       );
@@ -167,7 +167,9 @@ class ConnectorAdvanced extends React.PureComponent {
         let _component =
           renderState === RENDER_STATES[0]
             ? null
-            : typeof component === "function" ? component() : component;
+            : typeof component === "function"
+              ? component()
+              : component;
         return children({}, true, _component, true);
       } else {
         return children(
