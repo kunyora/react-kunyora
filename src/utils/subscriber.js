@@ -225,21 +225,19 @@ Subscriber.prototype.buildRequestHandshakePromise = function(
  */
 Subscriber.prototype.composeAxiosInstance = function(arrayOfQueryConfig) {
   this.lengthOfArrayOfQueryConfig = arrayOfQueryConfig.length;
-  let reducedAxiosReduced = arrayOfQueryConfig.reduce(
-    (acc, { operation, config, fetchPolicy }) => {
-      let _config = config || {},
-        _instance = null,
-        _fetchPolicy = fetchPolicy || "network-only";
-      if (_fetchPolicy === "cache-first") {
-        _instance = this.getQueryFromStore(operation, _config);
-      } else {
-        _instance = this.getQueryAxiosInstance(operation, _config);
-      }
-      acc.push(_instance);
-      return acc;
-    },
-    []
-  );
+  let reducedAxiosReduced = arrayOfQueryConfig.reduce((acc, args) => {
+    let { operation, config, fetchPolicy } = args,
+      _config = config || {},
+      _instance = null,
+      _fetchPolicy = fetchPolicy || "network-only";
+    if (_fetchPolicy === "cache-first") {
+      _instance = this.getQueryFromStore(operation, _config);
+    } else {
+      _instance = this.getQueryAxiosInstance(operation, _config);
+    }
+    acc.push(_instance);
+    return acc;
+  }, []);
   return reducedAxiosReduced;
 };
 

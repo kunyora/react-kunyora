@@ -1,9 +1,9 @@
 /**
  * This is a small utility package tailored to deep clone a simple object
- * It is not however a sophisticated as lodash cloneDeep method but addresses the library's problem 
- * @param {aObject} aObject 
+ * It is not however a sophisticated as lodash cloneDeep method but addresses the library's problem
+ * @param {aObject} aObject
  */
-export function cloneDeep(aObject) {
+export default function cloneDeep(aObject) {
   if (!aObject) {
     return aObject;
   }

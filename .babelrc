@@ -1,31 +1,29 @@
 {
   "plugins": [
-    "syntax-jsx",
-    "transform-es2015-arrow-functions",
-    "transform-es2015-block-scoping",
-    "transform-es2015-classes",
-    "transform-es2015-destructuring",
-    "transform-es2015-template-literals",
-    "transform-object-rest-spread",
-    "transform-react-display-name",
     "transform-class-properties",
-    "transform-react-jsx"
+    "transform-es2015-template-literals",
+    "transform-es2015-function-name",
+    "transform-es2015-arrow-functions",
+    "transform-es2015-classes",
+    "transform-es2015-object-super",
+    "transform-es2015-shorthand-properties",
+    "check-es2015-constants",
+    "transform-es2015-spread",
+    "transform-es2015-destructuring",
+    "transform-es2015-block-scoping",
+    "transform-object-rest-spread",
+    "transform-react-jsx",
+    "syntax-jsx"
   ],
   "env": {
     "test": {
-      "plugins": [
-        ["transform-es2015-modules-commonjs"]
-      ]
+      "plugins": [["transform-es2015-modules-commonjs"]]
     },
     "commonjs": {
-      "plugins": [
-        ["transform-es2015-modules-commonjs"]
-      ]
+      "plugins": [["transform-es2015-modules-commonjs"]]
     },
     "rollup": {
-      "plugins": [
-        "external-helpers"
-      ]
+      "plugins": ["external-helpers"]
     }
   }
 }

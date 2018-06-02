@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import warnings from "../utils/warnings"; 
+import warnings from "../utils/warnings";
 
 import * as types from "../types";
 import Connect from "../auxillary_components/Connect";
@@ -44,8 +44,10 @@ class RouterAdvanced extends React.PureComponent {
     }
     //@we use this as a default because we felt it might be possible to specify later on in the feature the kind of requestPolicy that you want i.e request-first-1
     this.requestPolicy = "request-all";
+    let _obj = {};
+    _obj[name] = {};
     this.state = {
-      [name]: {}
+      ..._obj
     };
     this.isComponentMounted = true;
     this.subscriber = new Subscriber(store, client, true, loader);
@@ -79,11 +81,10 @@ class RouterAdvanced extends React.PureComponent {
   setErrorDataState = error => {
     let { name } = this.props;
     if (this.isComponentMounted) {
+      let _obj = {};
+      _obj[name] = { ...this.state[name], error };
       this.setState({
-        [name]: {
-          ...this.state[name],
-          error
-        }
+        ..._obj
       });
     }
   };
@@ -97,14 +98,19 @@ class RouterAdvanced extends React.PureComponent {
   setSuccessDataState = datas => {
     let { resources, store, onRequestRoute } = this.props;
 
-    resources.forEach(({ operation, config }, i) => {
+    resources.forEach((arg, i) => {
+      let { operation, config } = arg;
       config = config || {};
       ((operation, config) => {
         let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-          _newState = {
-            ...overallState,
-            [createSignatureHash(operation, config)]: datas[i].data
-          };
+          _obj = {};
+
+        _obj[createSignatureHash(operation, config)] = datas[i].data;
+
+        _newState = {
+          ...overallState,
+          ..._obj
+        };
         store.dispatch(types.SET_QUERY_DATA, _newState);
       })(operation, config);
     });

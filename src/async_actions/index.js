@@ -22,9 +22,11 @@ export const startProgressCount = name => store => {
         progress = (time - start) / duration;
 
         if (progress <= 0.8) {
+          let _obj = {};
+          _obj[name] = draw(progress) * 100;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: draw(progress) * 100
+            ..._obj
           });
           requestAnimationFrame(animate);
         } else {
@@ -60,15 +62,19 @@ export const completeProgressCount = name => store => {
 
         if (movement >= progress && movement < 1) {
           progress = movement;
+          let _obj = {};
+          _obj[name] = draw(progress) * 100;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: draw(progress) * 100
+            ..._obj
           });
           requestAnimationFrame(animate);
         } else if (movement >= 1) {
+          let _obj = {};
+          _obj[name] = 0;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: 0
+            ..._obj
           });
           progress = 0;
           animation = null;

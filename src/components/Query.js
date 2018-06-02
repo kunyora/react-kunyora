@@ -1,13 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import warning from "../utils/warnings";
-import isEqual from "../utils/isEqual";
 
 import Connect from "../auxillary_components/Connect";
 import * as types from "../types";
 import Subscriber from "../utils/subscriber";
 import { createSignatureHash } from "../utils/auxillaries";
 import warning from "../utils/warnings";
+import isEqual from "../utils/isEqual";
 
 /**
  * QueryAdvanced wraps the Query component and provides it with sets of methods
@@ -67,11 +66,10 @@ class QueryAdvanced extends React.PureComponent {
 
       if (!skip) {
         if (!isEqual(queries, data) && queries && this.isComponentMounted) {
+          let _obj = {};
+          _obj[operation] = { ...this.state[operation], data: queries };
           this.setState({
-            [operation]: {
-              ...this.state[operation],
-              data: queries
-            }
+            ..._obj
           });
         }
       }
@@ -83,8 +81,10 @@ class QueryAdvanced extends React.PureComponent {
   }
 
   setInitialStateBeforeMount = (operation, arg) => {
+    let _obj = {};
+    _obj[operation] = { ...arg };
     this.state = {
-      [operation]: { ...arg }
+      ..._obj
     };
   };
 
@@ -175,11 +175,10 @@ class QueryAdvanced extends React.PureComponent {
       _previousState = (this.state && this.state[operation]) || this._state;
 
     if (this._state && this.isComponentMounted) {
+      let _obj = {};
+      _obj[operation] = { ..._previousState, loading: true };
       this.setState({
-        [operation]: {
-          ..._previousState,
-          loading: true
-        }
+        ..._obj
       });
     } else {
       this._state = 1;
@@ -196,21 +195,28 @@ class QueryAdvanced extends React.PureComponent {
     let initialDataSettings = { isInitialDataSet: true },
       { operation, store } = this.props,
       overallState = store.getState()[types.SET_QUERY_DATA] || {},
-      _newState = {
+      _obj = {};
+
+    _obj[createSignatureHash(operation, config)] = data;
+
+    let _newState = {
         ...overallState,
-        [createSignatureHash(operation, config)]: data
-      };
+        ..._obj
+      },
+      _operation = {};
+
+    _operation[operation] = {
+      ...this.state[operation],
+      error: undefined,
+      ...initialDataSettings,
+      loading: false,
+      data
+    };
 
     store.dispatch(types.SET_QUERY_DATA, _newState);
     if (this.isComponentMounted) {
       this.setState({
-        [operation]: {
-          ...this.state[operation],
-          error: undefined,
-          ...initialDataSettings,
-          loading: false,
-          data
-        }
+        ..._operation
       });
     }
   };
@@ -223,12 +229,10 @@ class QueryAdvanced extends React.PureComponent {
   setErrorDataState = error => {
     let { operation } = this.props;
     if (this.isComponentMounted) {
+      let _obj = {};
+      _obj[operation] = { ...this.state[operation], loading: false, error };
       this.setState({
-        [operation]: {
-          ...this.state[operation],
-          loading: false,
-          error
-        }
+        ..._obj
       });
     }
   };
