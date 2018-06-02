@@ -29,7 +29,7 @@
     "create-react-context": "^0.1.6",
     "immutable": "^3.8.2",
     "invariant": "^2.2.2",
-    "kunyora": "^0.1.0",
+    "kunyora": "0.1.0",
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0"
   },
