@@ -2807,9 +2807,9 @@ kind-of@^4.0.0:
   dependencies:
     is-buffer "^1.1.5"
 
-"kunyora@https://github.com/kunyora/kunyora.git":
-  version "1.0.0"
-  resolved "https://github.com/kunyora/kunyora.git#b53cc5f9181fbc04a667ec7eb2d1ad8639d9136b"
+kunyora@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/kunyora/-/kunyora-0.1.0.tgz#1dc6cb2b5bdc68e57fcc35cd0eb4062770f89446"
   dependencies:
     axios "^0.17.1"
     camelcase "^4.1.0"
@@ -4284,7 +4284,7 @@ webpack-sources@^1.0.1:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^3.10.0:
+webpack@3.10.0:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.10.0.tgz#5291b875078cf2abf42bdd23afe3f8f96c17d725"
   dependencies:
