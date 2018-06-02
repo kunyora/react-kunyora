@@ -1,16 +1,31 @@
 {
-  "presets": [
-    [
-      "env",
-      {
-        "modules": false
-      }
-    ]
+  "plugins": [
+    "syntax-jsx",
+    "transform-es2015-arrow-functions",
+    "transform-es2015-block-scoping",
+    "transform-es2015-classes",
+    "transform-es2015-destructuring",
+    "transform-es2015-template-literals",
+    "transform-object-rest-spread",
+    "transform-react-display-name",
+    "transform-class-properties",
+    "transform-react-jsx"
   ],
-  "plugins": ["transform-object-rest-spread"],
   "env": {
     "test": {
-      "plugins": ["transform-es2015-modules-commonjs"]
+      "plugins": [
+        ["transform-es2015-modules-commonjs"]
+      ]
+    },
+    "commonjs": {
+      "plugins": [
+        ["transform-es2015-modules-commonjs"]
+      ]
+    },
+    "rollup": {
+      "plugins": [
+        "external-helpers"
+      ]
     }
   }
 }
