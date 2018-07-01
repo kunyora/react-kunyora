@@ -24,20 +24,20 @@ class RouterAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { name, resources, store, client, onRequestRoute, loader } = props;
-    warning(
+    warnings(
       typeof name === "string",
       "Props [name] must be passed to component Router and it must be of type string"
     );
-    warning(
+    warnings(
       typeof onRequestRoute === "function",
       "Props [onRequestRoute] must be passed to the component Router and it must be of type [function]"
     );
-    warning(
+    warnings(
       resources && resources instanceof Array,
       "[resources] property is required in props passed to the Router component \n and it must be of type Array"
     );
     if (loader) {
-      warning(
+      warnings(
         typeof loader === "function",
         "The [loader] props supplied to Router component must be of type [function]"
       );
@@ -107,7 +107,7 @@ class RouterAdvanced extends React.PureComponent {
 
         _obj[createSignatureHash(operation, config)] = datas[i].data;
 
-        _newState = {
+        let _newState = {
           ...overallState,
           ..._obj
         };
