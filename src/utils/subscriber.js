@@ -1,5 +1,4 @@
-import invariant from "invariant";
-import _ from "lodash";
+import cloneDeep from "../utils/cloneDeep";
 
 import * as types from "../types";
 import { createSignatureHash } from "./auxillaries";
@@ -44,8 +43,10 @@ function Subscriber(store, client, shouldInitHandshake, loader) {
 Subscriber.prototype.subscribeToQuery = function(operation, config) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
-    let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
+    let {
+        defaults: { headers }
+      } = this.client,
+      requestHeaders = this.client.useBeforeRequest(cloneDeep(headers));
 
     _promise = this.sendQuery(requestHeaders, config, operation);
   } else {
@@ -93,8 +94,10 @@ Subscriber.prototype.sendQuery = function(headers, config, operation) {
 Subscriber.prototype.subscribeToMutation = function(operation, config) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
-    let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
+    let {
+        defaults: { headers }
+      } = this.client,
+      requestHeaders = this.client.useBeforeRequest(cloneDeep(headers));
 
     _promise = this.sendMutation(requestHeaders, config, operation);
   } else {
@@ -143,8 +146,10 @@ Subscriber.prototype.subscribeToMultiConcurrentQueries = function(
 ) {
   let _promise = null;
   if (this.client.isUseBeforeCallbackSupplied) {
-    let { defaults: { headers } } = this.client,
-      requestHeaders = this.client.useBeforeRequest(_.cloneDeep(headers));
+    let {
+        defaults: { headers }
+      } = this.client,
+      requestHeaders = this.client.useBeforeRequest(cloneDeep(headers));
 
     _promise = this.sendMultipleConcurrentQueries(
       requestHeaders,
@@ -219,21 +224,19 @@ Subscriber.prototype.buildRequestHandshakePromise = function(
  */
 Subscriber.prototype.composeAxiosInstance = function(arrayOfQueryConfig) {
   this.lengthOfArrayOfQueryConfig = arrayOfQueryConfig.length;
-  let reducedAxiosReduced = arrayOfQueryConfig.reduce(
-    (acc, { operation, config, fetchPolicy }) => {
-      let _config = config || {},
-        _instance = null,
-        _fetchPolicy = fetchPolicy || "network-only";
-      if (_fetchPolicy === "cache-first") {
-        _instance = this.getQueryFromStore(operation, _config);
-      } else {
-        _instance = this.getQueryAxiosInstance(operation, _config);
-      }
-      acc.push(_instance);
-      return acc;
-    },
-    []
-  );
+  let reducedAxiosReduced = arrayOfQueryConfig.reduce((acc, args) => {
+    let { operation, config, fetchPolicy } = args,
+      _config = config || {},
+      _instance = null,
+      _fetchPolicy = fetchPolicy || "network-only";
+    if (_fetchPolicy === "cache-first") {
+      _instance = this.getQueryFromStore(operation, _config);
+    } else {
+      _instance = this.getQueryAxiosInstance(operation, _config);
+    }
+    acc.push(_instance);
+    return acc;
+  }, []);
   return reducedAxiosReduced;
 };
 

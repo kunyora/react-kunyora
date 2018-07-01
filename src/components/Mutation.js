@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
+import warning from "../utils/warnings";
 
 import Subscriber from "../utils/subscriber";
 import { KunyoraContext } from "./KunyoraProvider";
@@ -15,12 +15,12 @@ class MutationAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { operation, options, store, client } = props;
-    invariant(
+    warning(
       typeof operation === "string",
       "Props [operation] must be passed to component Mutation and it must be of type [string]"
     );
     if (options && options.config) {
-      invariant(
+      warning(
         options &&
           options.config &&
           typeof options.config === "object" &&
@@ -29,15 +29,18 @@ class MutationAdvanced extends React.PureComponent {
       );
     }
     //operations must be of type CREATE | UPDATE | PARTUPDATE | DELETE
-    invariant(
+    warning(
       operation.slice(0, 6).toUpperCase() === "CREATE" ||
         operation.slice(0, 6).toUpperCase() === "UPDATE" ||
         operation.slice(0, 10).toUpperCase() === "PARTUPDATE" ||
         operation.slice(0, 6).toUpperCase() === "DELETE",
       "It doesn't feel like you want the component to perform a mutation. Mutations could only be of the form createUser, deleteTicket etc with the ***create, update, partUpdate and delete*** methods as a prefix. please check the docs"
     );
+    let _obj = {};
+    _obj[operation] = { loading: false };
+
     this.state = {
-      [operation]: { loading: false }
+      ..._obj
     };
     this.isComponentMounted = true;
     this.subscriber = new Subscriber(store, client);
@@ -65,10 +68,11 @@ class MutationAdvanced extends React.PureComponent {
   setLoadingDataState = () => {
     let { operation } = this.props;
     if (this.isComponentMounted) {
+      let _obj = {};
+      _obj[operation] = { loading: !this.state[operation].loading };
+
       this.setState({
-        [operation]: {
-          loading: !this.state[operation].loading
-        }
+        ..._obj
       });
     }
   };
@@ -82,17 +86,22 @@ class MutationAdvanced extends React.PureComponent {
   refetchQueries = refetchConfig => {
     let { store } = this.props;
 
-    refetchConfig.forEach(({ operation, config }) => {
+    refetchConfig.forEach(arg => {
+      let { operation, config } = arg;
       config = config || {};
       ((operation, config) => {
         this.subscriber
           .subscribeToQuery(operation, config || {})
           .then(response => {
             let overallState = store.getState()[types.SET_QUERY_DATA] || {},
-              _newState = {
-                ...overallState,
-                [createSignatureHash(operation, config)]: response.data
-              };
+              _obj = {};
+
+            _obj[createSignatureHash(operation, config)] = response.data;
+
+            let _newState = {
+              ...overallState,
+              ..._obj
+            };
 
             store.dispatch(types.SET_QUERY_DATA, _newState);
           })

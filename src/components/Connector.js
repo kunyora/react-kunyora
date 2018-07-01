@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import invariant from "invariant";
+import warning from "../utils/warnings";
 
 import * as types from "../types";
 import Connect from "../auxillary_components/Connect";
@@ -43,18 +43,18 @@ class ConnectorAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     let { name, delay, loadingComponent, timeout } = this.props;
-    invariant(
+    warning(
       typeof name === "string",
       "The [name] prop must be passed to the Connector component and must be of type [string]"
     );
     if (delay) {
-      invariant(
+      warning(
         typeof delay === "number",
         "The delay supplied to the Connector component must be of type [number]"
       );
     }
     if (timeout) {
-      invariant(
+      warning(
         typeof timeout === "number",
         "The timeout supplied to the Connector component must be of type [number]"
       );
@@ -102,7 +102,7 @@ class ConnectorAdvanced extends React.PureComponent {
   };
 
   componentDidMount() {
-    let { timeout, loader, errorComponent } = this.props;
+    let { loader, errorComponent } = this.props;
     //If a loader props is supplied, then we load the component and update the state
     //We use Promise.race to run 2 promises, a promise to load the component and another promise to set a timeout
     if (loader) {
@@ -155,7 +155,7 @@ class ConnectorAdvanced extends React.PureComponent {
   };
 
   render() {
-    let { name, progress, children, loader } = this.props,
+    let { progress, children, loader } = this.props,
       { component, renderState } = this.state,
       _progressCount = progress || 0;
     if (!loader) {
@@ -167,7 +167,9 @@ class ConnectorAdvanced extends React.PureComponent {
         let _component =
           renderState === RENDER_STATES[0]
             ? null
-            : typeof component === "function" ? component() : component;
+            : typeof component === "function"
+              ? component()
+              : component;
         return children({}, true, _component, true);
       } else {
         return children(

@@ -1,5 +1,5 @@
 import * as types from "../types";
-import invariant from "invariant";
+import warning from "../utils/warnings";
 
 let progress = 0;
 let shouldStopStartAnimation = false;
@@ -22,9 +22,11 @@ export const startProgressCount = name => store => {
         progress = (time - start) / duration;
 
         if (progress <= 0.8) {
+          let _obj = {};
+          _obj[name] = draw(progress) * 100;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: draw(progress) * 100
+            ..._obj
           });
           requestAnimationFrame(animate);
         } else {
@@ -32,7 +34,7 @@ export const startProgressCount = name => store => {
         }
       });
   } catch (error) {
-    invariant(
+    warning(
       window,
       "React-Kunyora does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
     );
@@ -60,15 +62,19 @@ export const completeProgressCount = name => store => {
 
         if (movement >= progress && movement < 1) {
           progress = movement;
+          let _obj = {};
+          _obj[name] = draw(progress) * 100;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: draw(progress) * 100
+            ..._obj
           });
           requestAnimationFrame(animate);
         } else if (movement >= 1) {
+          let _obj = {};
+          _obj[name] = 0;
           store.dispatch(types.SET_PAGE_DOWNLOAD_PROGRESS, {
             ...overallState,
-            [name]: 0
+            ..._obj
           });
           progress = 0;
           animation = null;
@@ -77,7 +83,7 @@ export const completeProgressCount = name => store => {
         }
       });
   } catch (error) {
-    invariant(
+    warning(
       window,
       "React-Kunyora does not currently support server-pull before route in your current environment. Please use this feature or the Router component only on the web. \n However we plan to support this in feature releases"
     );

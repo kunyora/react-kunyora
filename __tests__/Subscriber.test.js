@@ -1,6 +1,6 @@
 import KunyoraClient from "kunyora";
 
-import Subsciber from "../utils/subscriber";
+import Subsciber from "../src/utils/subscriber";
 import client from "../__customMockData__/client.mock";
 
 const Client = KunyoraClient({});
