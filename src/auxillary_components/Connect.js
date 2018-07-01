@@ -37,7 +37,7 @@ class ConnectAdvanced extends React.PureComponent {
   updateState = () => {
     let {
       mapStateToProps,
-      store: { getState, listen }
+      store: { getState }
     } = this.props;
 
     let componentState = this.state || {};

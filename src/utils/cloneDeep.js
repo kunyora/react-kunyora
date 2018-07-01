@@ -12,7 +12,7 @@ export default function cloneDeep(aObject) {
 
   for (var key in aObject) {
     let _value = aObject[key];
-    bObject[key] = typeof _value == "object" ? cloneDeep(_value) : _value;
+    bObject[key] = typeof _value === "object" ? cloneDeep(_value) : _value;
   }
 
   return bObject;

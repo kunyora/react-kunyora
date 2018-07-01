@@ -15,7 +15,7 @@ import isEqual from "../utils/isEqual";
 class QueryAdvanced extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
-    let { operation, options, queries, store, client } = props;
+    let { operation, options, store, client } = props;
     warning(
       typeof operation === "string",
       "Props [operation] must be passed to component Queries and it must be of type [string]"
@@ -273,7 +273,7 @@ class QueryAdvanced extends React.PureComponent {
    * @param {Object} fetchMoreOptions
    */
   fetchMore = fetchMoreOptions => {
-    let { skip, operation, options, store } = this.props,
+    let { skip, operation, options } = this.props,
       _options = options || {},
       { updateQuery } = fetchMoreOptions;
     if (!skip) {

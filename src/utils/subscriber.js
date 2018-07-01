@@ -1,4 +1,3 @@
-import warning from "../utils/warnings";
 import cloneDeep from "../utils/cloneDeep";
 
 import * as types from "../types";
